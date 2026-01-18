@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 
-DATACLASS_KWARGS = dict(
+_DATACLASS_KWARGS = dict(
     eq=False,
     order=False,
     frozen=True,
@@ -8,7 +8,7 @@ DATACLASS_KWARGS = dict(
     kw_only=True,
 )
 
-FIELD_KWARGS = dict(
+_FIELD_KWARGS = dict(
     compare=False,
     kw_only=True,
 )

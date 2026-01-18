@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from .utils import DATACLASS_KWARGS
+from .utils import _DATACLASS_KWARGS
 from ..libxml.xml import Element, ElementMaker
 
 
-@dataclass(**DATACLASS_KWARGS)
+@dataclass(**_DATACLASS_KWARGS)
 class ContainerFileBuilder:
     package_document: str
 

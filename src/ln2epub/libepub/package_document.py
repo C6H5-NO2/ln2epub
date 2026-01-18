@@ -1,21 +1,24 @@
-import uuid
 from dataclasses import dataclass, field
+from uuid import uuid4
 
-from .utils import DATACLASS_KWARGS, FIELD_KWARGS, datetime_iso8601
+from .utils import _DATACLASS_KWARGS, _FIELD_KWARGS, datetime_iso8601
 from ..libxml.xml import Element, ElementMaker, QName
 
 _DC_IDENTIFIER_ID: str = 'dc-identifier'
 _DC_NAMESPACE: str = 'http://purl.org/dc/elements/1.1/'
 
 
-@dataclass(**DATACLASS_KWARGS)
+@dataclass(**_DATACLASS_KWARGS)
 class PackageDocumentBuilder:
-    dc_identifier: str = field(default_factory=lambda: f'urn:uuid:{uuid.uuid4()}', **FIELD_KWARGS)
+    dc_identifier: str = field(default_factory=lambda: f'urn:uuid:{uuid4()}', **_FIELD_KWARGS)
     dc_title: str = ''
     dc_language: str = ''
-    dcterms_modified: str = field(default_factory=lambda: datetime_iso8601(), **FIELD_KWARGS)
+    dcterms_modified: str = field(default_factory=lambda: datetime_iso8601(), **_FIELD_KWARGS)
 
     dc_creator: str | None = None
+
+    app_generator: str | None = 'ln2epub'
+    app_generated_by: str | None = None
 
 
 def build_package_document(arg: PackageDocumentBuilder) -> Element:
@@ -39,10 +42,6 @@ def build_package_document(arg: PackageDocumentBuilder) -> Element:
     return package
 
 
-def _refine():
-    field(default_factory=lambda: f'urn:uuid:{uuid.uuid4()}')
-
-
 def _build_metadata(arg: PackageDocumentBuilder, em: ElementMaker) -> Element:
     metadata: Element = em.metadata()
 
@@ -57,6 +56,14 @@ def _build_metadata(arg: PackageDocumentBuilder, em: ElementMaker) -> Element:
 
     dcterms_modified = em.meta(arg.dcterms_modified, property='dcterms:modified')
     metadata.append(dcterms_modified)
+
+    if arg.app_generator:
+        app_generator = em.meta(arg.app_generator, property='app:generator')
+        metadata.append(app_generator)
+
+    if arg.app_generated_by:
+        app_generated_by = em.meta(arg.app_generated_by, property='app:generated-by')
+        metadata.append(app_generated_by)
 
     return metadata
 
