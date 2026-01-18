@@ -5,7 +5,7 @@ from ..libxml.xml import Element, ElementMaker
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerFileBuilder:
-    package_document: str
+    package_document: str = 'EPUB/package.opf'
 
 
 def build_container_file(arg: ContainerFileBuilder) -> Element:

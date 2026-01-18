@@ -117,7 +117,6 @@ def _build_spine(arg: PackageDocumentBuilder, em: ElementMaker) -> Element:
     spine: Element = em.spine()
     items = sorted((it for it in arg.items if it.reading_order is not None), key=lambda it: it.reading_order)
     for it in items:
-        # linear=?
         itemref = em.itemref(idref=it.id)
         spine.append(itemref)
     return spine
