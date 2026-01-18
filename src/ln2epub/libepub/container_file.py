@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
-from .utils import _DATACLASS_KWARGS
 from ..libxml.xml import Element, ElementMaker
 
 
-@dataclass(**_DATACLASS_KWARGS)
+@dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerFileBuilder:
     package_document: str
 

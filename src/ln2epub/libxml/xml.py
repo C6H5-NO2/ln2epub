@@ -1,7 +1,9 @@
+from typing import Final
+
 import lxml.builder
 import lxml.etree
 
-XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace'
+XML_NAMESPACE: Final[str] = 'http://www.w3.org/XML/1998/namespace'
 
 # noinspection PyProtectedMember
 Element = lxml.etree._Element
