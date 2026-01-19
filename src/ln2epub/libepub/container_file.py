@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from typing import Final
 
 from ..libxml.xml import Element, ElementMaker
+
+_CONTAINER_NAMESPACE: Final[str] = 'urn:oasis:names:tc:opendocument:xmlns:container'
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
@@ -9,9 +12,12 @@ class ContainerFileBuilder:
 
 
 def build_container_file(arg: ContainerFileBuilder) -> Element:
-    em = ElementMaker(nsmap={
-        None: 'urn:oasis:names:tc:opendocument:xmlns:container',
-    })
+    em = ElementMaker(
+        namespace=_CONTAINER_NAMESPACE,
+        nsmap={
+            None: _CONTAINER_NAMESPACE,
+        },
+    )
     container = em.container(
         em.rootfiles(
             em.rootfile(

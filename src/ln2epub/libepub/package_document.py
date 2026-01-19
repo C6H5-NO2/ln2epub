@@ -10,6 +10,7 @@ from ..libxml.xml import Element, ElementMaker, QName
 from ..util.dataclass import _attr_setter
 from ..util.datetime import datetime_iso8601
 
+_OPF_NAMESPACE: Final[str] = 'http://www.idpf.org/2007/opf'
 _DC_IDENTIFIER_ID: Final[str] = 'dc-identifier'
 _DC_NAMESPACE: Final[str] = 'http://purl.org/dc/elements/1.1/'
 
@@ -52,11 +53,14 @@ class PackageDocumentBuilder:
 
 
 def build_package_document(arg: PackageDocumentBuilder) -> Element:
-    em = ElementMaker(nsmap={
-        None: 'http://www.idpf.org/2007/opf',
-        'dc': _DC_NAMESPACE,
-        'dcterms': 'http://purl.org/dc/terms/',
-    })
+    em = ElementMaker(
+        namespace=_OPF_NAMESPACE,
+        nsmap={
+            None: _OPF_NAMESPACE,
+            'dc': _DC_NAMESPACE,
+            'dcterms': 'http://purl.org/dc/terms/',
+        },
+    )
     metadata = _build_metadata(arg, em)
     manifest = _build_manifest(arg, em)
     spine = _build_spine(arg, em)
