@@ -3,7 +3,7 @@ import os.path
 from .container import ContainerBuilder, build_container
 from .container_file import ContainerFileBuilder, build_container_file
 from .package_document import PackageDocumentBuilder, build_package_document
-from ..libxml.xml import dump as xml_dump
+from ..libxml.xml import xml_dump
 
 
 def _build_epub(
