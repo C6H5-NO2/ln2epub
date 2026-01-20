@@ -1,6 +1,10 @@
-def _attr_setter[T](_self: T, /) -> T:
-    class AttrSetter:
-        def __setattr__(self, name, value):
-            object.__setattr__(_self, name, value)
+class __AttrSetter:
+    def __init__(self, obj):
+        self.__obj = obj
 
-    return AttrSetter()
+    def __setattr__(self, name, value):
+        object.__setattr__(self.__obj, name, value)
+
+
+def attr_setter[T](_self: T, /) -> T:
+    return __AttrSetter(_self)

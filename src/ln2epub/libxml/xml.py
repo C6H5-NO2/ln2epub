@@ -1,31 +1,38 @@
-from typing import Final
+from typing import Final, LiteralString, TYPE_CHECKING
 
 import lxml.builder
 import lxml.etree
 
-XML_NAMESPACE: Final[str] = 'http://www.w3.org/XML/1998/namespace'
-
-# noinspection PyProtectedMember
-Element = lxml.etree._Element
-ElementFactory = lxml.etree.Element
 ElementMaker = lxml.builder.ElementMaker
-# noinspection PyProtectedMember
-ElementTree = lxml.etree._ElementTree
-ElementTreeFactory = lxml.etree.ElementTree
 QName = lxml.etree.QName
 
+# dark magic for (some) type annotations in PyCharm
+if not TYPE_CHECKING:
+    ElementTree = lxml.etree.ElementTree
+    Element = lxml.etree.Element
+else:
+    ElementTree = lxml.etree._ElementTree
+    Element = lxml.etree._Element
 
-def xml_dump(el: Element, fp) -> None:
-    _xml_dump(el, fp)
+XML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/XML/1998/namespace'
+XMLNS_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/2000/xmlns/'
 
 
-def _xml_dump(el, fp, *, doctype='<?xml version="1.0" encoding="utf-8"?>') -> None:
+def xml_element_maker() -> ElementMaker:
+    return lxml.builder.E
+
+
+def xml_dump(
+    el: Element,
+    fp,
+    *,
+    doctype='<?xml version="1.0" encoding="utf-8"?>',
+) -> None:
     if not hasattr(fp, 'write'):
         with open(fp, 'wb') as fp:
-            _xml_dump(el, fp, doctype=doctype)
+            xml_dump(el, fp, doctype=doctype)
         return
-    # noinspection PyAbstractClass,PyTypeChecker
-    et: ElementTree = ElementTreeFactory(el)
+    et = ElementTree(el)
     et.write(
         fp,
         encoding='utf-8',
