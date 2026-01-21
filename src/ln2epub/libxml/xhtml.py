@@ -1,6 +1,6 @@
 from typing import Final, LiteralString
 
-import lxml.html
+from lxml.html import xhtml_parser
 
 from .xml import Element, ElementMaker, QName, XML_NAMESPACE, _xml_dump
 
@@ -17,12 +17,12 @@ def xhtml_element_maker(
             None: XHTML_NAMESPACE,
             'xml': XML_NAMESPACE,
         },
-        makeelement=lxml.html.xhtml_parser.makeelement,
+        makeelement=xhtml_parser.makeelement,
     )
     return em
 
 
-# deprecated
+# todo deprecated
 def xhtml_build(*, lang: str) -> Element:
     em = xhtml_element_maker()
     html: Element = em.html(em.head(em.title()), em.body())

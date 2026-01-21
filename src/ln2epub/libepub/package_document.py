@@ -1,7 +1,7 @@
-import os.path
 from dataclasses import dataclass
 from functools import cache
 from mimetypes import guess_file_type
+from os.path import basename
 from typing import Final, Literal, LiteralString
 from uuid import uuid4
 
@@ -35,7 +35,7 @@ def _element_maker() -> ElementMaker:
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
-class PublicationResourceBuilder:
+class PublicationResourceItemBuilder:
     href: str
     id: str = None
     media_type: str = None
@@ -46,7 +46,7 @@ class PublicationResourceBuilder:
     def __post_init__(self):
         setter = _attr_setter(self)
         if not self.id:
-            setter.id = os.path.basename(self.href)
+            setter.id = basename(self.href)
         if not self.media_type:
             setter.media_type, _ = guess_file_type(self.id)
 
@@ -77,7 +77,7 @@ class PackageDocumentBuilder:
     dc_creator: str | None = None
     app_generator: str | None = f'{NAME} v{VERSION}'
     app_generated_by: str | None = None
-    items: list[PublicationResourceBuilder]
+    items: list[PublicationResourceItemBuilder]
 
     # noinspection PyDataclass
     def __post_init__(self):

@@ -1,14 +1,13 @@
-import lxml.html
-import lxml.html.builder
+from lxml.html import HtmlElement, html_parser
 
 from .xml import ElementMaker
 
-HtmlElement = lxml.html.HtmlElement
+HtmlElement = HtmlElement
 
 
 def html_element_maker() -> ElementMaker:
     # em = lxml.html.builder.E
     em = ElementMaker(
-        makeelement=lxml.html.html_parser.makeelement,
+        makeelement=html_parser.makeelement,
     )
     return em

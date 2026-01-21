@@ -1,18 +1,18 @@
 from typing import Final, LiteralString, TYPE_CHECKING
 
-import lxml.builder
-import lxml.etree
+from lxml.builder import ElementMaker
+from lxml.etree import QName
 
-ElementMaker = lxml.builder.ElementMaker
-QName = lxml.etree.QName
+ElementMaker = ElementMaker
+QName = QName
 
 # dark magic for autocomplete in PyCharm
 if not TYPE_CHECKING:
-    ElementTree = lxml.etree.ElementTree
-    Element = lxml.etree.Element
+    from lxml.etree import ElementTree, Element
 else:
-    ElementTree = lxml.etree._ElementTree
-    Element = lxml.etree._Element
+    from lxml.etree import _ElementTree as ElementTree, _Element as Element
+ElementTree = ElementTree
+Element = Element
 
 XML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/XML/1998/namespace'
 XMLNS_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/2000/xmlns/'
