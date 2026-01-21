@@ -48,18 +48,18 @@ class PublicationResourceItemBuilder:
         if not self.id:
             setter.id = basename(self.href)
         if not self.media_type:
-            setter.media_type, _ = guess_file_type(self.id)
+            setter.media_type, _ = guess_file_type(self.href)
 
     def _build_manifest_item(self) -> Element:
         em = _element_maker()
-        attribs = {
+        attrib = {
             'href': self.href,
             'id': self.id,
             'media-type': self.media_type,
         }
         if self.properties:
-            attribs['properties'] = self.properties
-        item = em.item(**attribs)
+            attrib['properties'] = self.properties
+        item = em.item(**attrib)
         return item
 
     def _build_spine_itemref(self) -> Element:

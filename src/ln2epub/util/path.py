@@ -1,7 +1,7 @@
 import os.path
 
 
-def contained_path(
+def contained_url(
     path: str,
     *,
     root: str,
@@ -21,15 +21,15 @@ def contained_path(
         return None
 
 
-def relative_url_path(
+def relative_url(
     path: str,
     *,
     start: str,
     root: str
 ) -> str | None:
-    path = contained_path(path, root=root, strict=False)
+    path = contained_url(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))
-    start_dir = contained_path(start_dir, root=root, strict=False)
+    start_dir = contained_url(start_dir, root=root, strict=False)
     if path and start_dir:
         rel = os.path.relpath(path, start=start_dir)
         return rel.replace(os.path.sep, '/')

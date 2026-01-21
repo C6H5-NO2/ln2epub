@@ -24,7 +24,7 @@ def _element_maker() -> ElementMaker:
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerFileBuilder:
-    package_document: str
+    package_document_url: str  # = 'EPUB/package.opf'
 
     def build(self) -> Element:
         em = _element_maker()
@@ -32,7 +32,7 @@ class ContainerFileBuilder:
             em.rootfiles(
                 em.rootfile(
                     **{
-                        'full-path': self.package_document,
+                        'full-path': self.package_document_url,
                         'media-type': 'application/oebps-package+xml'
                     },
                 )
