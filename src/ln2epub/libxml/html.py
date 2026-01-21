@@ -7,4 +7,8 @@ HtmlElement = lxml.html.HtmlElement
 
 
 def html_element_maker() -> ElementMaker:
-    return lxml.html.builder.E
+    # em = lxml.html.builder.E
+    em = ElementMaker(
+        makeelement=lxml.html.html_parser.makeelement,
+    )
+    return em

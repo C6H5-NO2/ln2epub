@@ -21,11 +21,11 @@ def contained_path(
         return None
 
 
-def relative_path(
+def relative_url_path(
     path: str,
     *,
     start: str,
-    root: str,
+    root: str
 ) -> str | None:
     path = contained_path(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))

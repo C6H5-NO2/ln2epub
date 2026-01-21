@@ -6,7 +6,7 @@ import lxml.etree
 ElementMaker = lxml.builder.ElementMaker
 QName = lxml.etree.QName
 
-# dark magic for (some) type annotations in PyCharm
+# dark magic for autocomplete in PyCharm
 if not TYPE_CHECKING:
     ElementTree = lxml.etree.ElementTree
     Element = lxml.etree.Element
@@ -18,19 +18,32 @@ XML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/XML/1998/namespace'
 XMLNS_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/2000/xmlns/'
 
 
-def xml_element_maker() -> ElementMaker:
-    return lxml.builder.E
+def xml_element_maker(
+    *,
+    namespace: str = None,
+    nsmap: dict[str | None, str] = None,
+) -> ElementMaker:
+    # em = lxml.builder.E
+    em = ElementMaker(
+        namespace=namespace,
+        nsmap=nsmap,
+    )
+    return em
 
 
-def xml_dump(
+def xml_dump(el: Element, fp) -> None:
+    _xml_dump(el, fp)
+
+
+def _xml_dump(
     el: Element,
     fp,
     *,
-    doctype='<?xml version="1.0" encoding="utf-8"?>',
+    doctype: str | None = '<?xml version="1.0" encoding="utf-8"?>',
 ) -> None:
     if not hasattr(fp, 'write'):
         with open(fp, 'wb') as fp:
-            xml_dump(el, fp, doctype=doctype)
+            _xml_dump(el, fp, doctype=doctype)
         return
     et = ElementTree(el)
     et.write(

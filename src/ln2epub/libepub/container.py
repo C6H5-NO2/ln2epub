@@ -6,18 +6,17 @@ from dataclasses import dataclass
 class ContainerBuilder:
     root_directory: str
 
+    def build(self) -> str:
+        root_dir = os.path.abspath(self.root_directory)
+        if os.path.exists(root_dir):
+            raise FileExistsError(root_dir)
+        os.makedirs(root_dir)
 
-def build_container(arg: ContainerBuilder) -> str:
-    root_dir = os.path.abspath(arg.root_directory)
-    if os.path.exists(root_dir):
-        raise FileExistsError(root_dir)
-    os.makedirs(root_dir)
+        mimetype = os.path.join(root_dir, 'mimetype')
+        with open(mimetype, 'wt', encoding='ascii', newline='\n') as fp:
+            fp.write('application/epub+zip')
 
-    mimetype = os.path.join(root_dir, 'mimetype')
-    with open(mimetype, 'wt', encoding='ascii', newline='\n') as fp:
-        fp.write('application/epub+zip')
+        metainf_dir = os.path.join(root_dir, 'META-INF')
+        os.makedirs(metainf_dir)
 
-    metainf_dir = os.path.join(root_dir, 'META-INF')
-    os.makedirs(metainf_dir)
-
-    return root_dir
+        return root_dir

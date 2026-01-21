@@ -2,12 +2,15 @@ from typing import Final, LiteralString
 
 import lxml.html
 
-from .xml import Element, ElementMaker, QName, XML_NAMESPACE, xml_dump
+from .xml import Element, ElementMaker, QName, XML_NAMESPACE, _xml_dump
 
 XHTML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/1999/xhtml'
 
 
-def xhtml_element_maker(*, nsmap: dict[str, str] = None) -> ElementMaker:
+def xhtml_element_maker(
+    *,
+    nsmap: dict[str, str] = None,
+) -> ElementMaker:
     em = ElementMaker(
         namespace=XHTML_NAMESPACE,
         nsmap=(nsmap if nsmap else {}) | {
@@ -19,6 +22,7 @@ def xhtml_element_maker(*, nsmap: dict[str, str] = None) -> ElementMaker:
     return em
 
 
+# deprecated
 def xhtml_build(*, lang: str) -> Element:
     em = xhtml_element_maker()
     html: Element = em.html(em.head(em.title()), em.body())
@@ -27,7 +31,7 @@ def xhtml_build(*, lang: str) -> Element:
 
 
 def xhtml_dump(el: Element, fp) -> None:
-    xml_dump(
+    _xml_dump(
         el,
         fp,
         doctype='<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n',

@@ -1,17 +1,13 @@
-from typing import Final
+from typing import Final, LiteralString
 
-from ..libxml.xhtml import XHTML_NAMESPACE
-from ..libxml.xml import ElementMaker, XML_NAMESPACE
+from ..libxml.xhtml import xhtml_element_maker
+from ..libxml.xml import ElementMaker
 
-EPUB_NAMESPACE: Final[str] = 'http://www.idpf.org/2007/ops'
+EPUB_NAMESPACE: Final[LiteralString] = 'http://www.idpf.org/2007/ops'
 
 
 def epub_xhtml_element_maker() -> ElementMaker:
-    return ElementMaker(
-        namespace=XHTML_NAMESPACE,
-        nsmap={
-            None: XHTML_NAMESPACE,
-            'xml': XML_NAMESPACE,
-            'epub': EPUB_NAMESPACE,
-        },
-    )
+    em = xhtml_element_maker(nsmap={
+        'epub': EPUB_NAMESPACE,
+    })
+    return em

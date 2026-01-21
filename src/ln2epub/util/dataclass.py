@@ -6,5 +6,5 @@ class __AttrSetter:
         object.__setattr__(self.__obj, name, value)
 
 
-def attr_setter[T](_self: T, /) -> T:
+def _attr_setter[T](_self: T, /) -> T:
     return __AttrSetter(_self)
