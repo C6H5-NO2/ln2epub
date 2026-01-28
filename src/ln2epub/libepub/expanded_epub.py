@@ -22,7 +22,7 @@ NAV_XHTML: Final[LiteralString] = 'nav.xhtml'
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
-class EpubBuilder:
+class ExpandedEpubBuilder:
     container_builder: ContainerBuilder
     pacakge_document_builder: PackageDocumentBuilder
 
