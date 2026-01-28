@@ -2,26 +2,26 @@ import os.path
 from dataclasses import dataclass
 from shutil import copyfile
 
-from ..util.path import contained_url
+from ..util.path import make_ancestors, require_contained
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerResourceBuilder:
     src_path: str
     dst_url: str
-    root_directory: str
 
-    def build(self) -> str:
+    def build(self, root_directory: str) -> str:
         src = os.path.abspath(self.src_path)
-        root = os.path.abspath(self.root_directory)
+        root = os.path.abspath(root_directory)
         dst = os.path.normpath(os.path.join(root, self.dst_url))
+        if not os.path.isdir(root):
+            raise NotADirectoryError(root)
         if not os.path.isfile(src):
             raise FileNotFoundError(src)
         if os.path.exists(dst):
             raise FileExistsError(dst)
-        if not contained_url(dst, root=root):
-            raise PermissionError(dst)
+        require_contained(dst, root=root)
 
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        make_ancestors(dst)
         copyfile(src=src, dst=dst)
         return dst

@@ -21,11 +21,22 @@ def contained_url(
         return None
 
 
+def require_contained(
+    path: str,
+    *,
+    root: str,
+) -> None:
+    path = os.path.abspath(path)
+    root = os.path.abspath(root)
+    if not contained_url(path, root=root):
+        raise PermissionError(path)
+
+
 def relative_url(
     path: str,
     *,
     start: str,
-    root: str
+    root: str,
 ) -> str | None:
     path = contained_url(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))
@@ -34,3 +45,12 @@ def relative_url(
         rel = os.path.relpath(path, start=start_dir)
         return rel.replace(os.path.sep, '/')
     return None
+
+
+def make_ancestors(
+    path: str,
+) -> str:
+    path = os.path.abspath(path)
+    parent = os.path.dirname(path)
+    os.makedirs(parent, exist_ok=True)
+    return parent

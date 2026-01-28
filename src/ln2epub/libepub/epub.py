@@ -1,42 +1,56 @@
 import os.path
+from dataclasses import dataclass
+from typing import Final, LiteralString
 
 from .container import ContainerBuilder
-from .container_file import ContainerFileBuilder
+from .container_resource import ContainerResourceBuilder
+from .navigation_document import NavigationDocumentBuilder
 from .package_document import PackageDocumentBuilder
+from ..libxml.xhtml import xhtml_document, xhtml_dump
 from ..libxml.xml import xml_dump
+from ..util.path import make_ancestors, require_contained
+
+EPUB: Final[LiteralString] = 'EPUB'
+AUDIO: Final[LiteralString] = 'audio'
+FONT: Final[LiteralString] = 'font'
+IMAGE: Final[LiteralString] = 'image'
+SCRIPT: Final[LiteralString] = 'script'
+STYLE: Final[LiteralString] = 'style'
+TEXT: Final[LiteralString] = 'text'
+PACKAGE_OPF: Final[LiteralString] = 'package.opf'
+NAV_XHTML: Final[LiteralString] = 'nav.xhtml'
 
 
-# todo
-def _build_epub(
-    container_builder: ContainerBuilder,
-    container_file_builder: ContainerFileBuilder,
-    pacakge_document_builder: PackageDocumentBuilder,
-):
-    root_dir = container_builder.build()
-    epub_dir = _build_epub_directory(root_dir)
+@dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
+class EpubBuilder:
+    container_builder: ContainerBuilder
+    pacakge_document_builder: PackageDocumentBuilder
 
-    container_file = os.path.join(root_dir, 'META-INF', 'container.xml')
-    container_file_el = container_file_builder.build()
-    xml_dump(container_file_el, container_file)
+    navigation_document_url: str = f'{EPUB}/{NAV_XHTML}'
+    navigation_document_builder: NavigationDocumentBuilder
 
-    package_document = os.path.join(root_dir, container_file_builder.package_document)
-    package_document_el = pacakge_document_builder.build()
-    xml_dump(package_document_el, package_document)
+    container_resources: list[ContainerResourceBuilder]
 
+    def build(self) -> str:
+        root = self.container_builder.build()
+        if not os.path.isdir(root):
+            raise NotADirectoryError(root)
 
-def _build_epub_directory(root_dir: str) -> str:
-    epub_dir = os.path.join(root_dir, 'EPUB')
-    os.makedirs(epub_dir)
+        package_document = \
+            os.path.join(root, self.container_builder.container_file_builder.package_document_url)
+        require_contained(package_document, root=root)
+        make_ancestors(package_document)
+        el = self.pacakge_document_builder.build()
+        xml_dump(el, package_document)
 
-    media_types = [
-        'audio',
-        'font',
-        'image',
-        'script',
-        'style',
-        'text',
-    ]
-    for media_type in media_types:
-        os.makedirs(os.path.join(epub_dir, media_type))
+        navigation_document = os.path.join(root, self.navigation_document_url)
+        require_contained(navigation_document, root=root)
+        make_ancestors(navigation_document)
+        el = self.navigation_document_builder.build()
+        el = xhtml_document(el, lang=self.pacakge_document_builder.dc_language)
+        xhtml_dump(el, navigation_document)
 
-    return epub_dir
+        for container_resource in self.container_resources:
+            container_resource.build(root_directory=root)
+
+        return root
