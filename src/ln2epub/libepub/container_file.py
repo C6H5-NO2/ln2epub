@@ -7,7 +7,7 @@ from ..libxml.xml import Element, ElementMaker, xml_element_maker
 CONTAINER_NAMESPACE: Final[LiteralString] = 'urn:oasis:names:tc:opendocument:xmlns:container'
 
 
-def container_element_maker() -> ElementMaker:
+def container_element_maker() -> ElementMaker[Element]:
     em = xml_element_maker(
         namespace=CONTAINER_NAMESPACE,
         nsmap={
@@ -18,7 +18,7 @@ def container_element_maker() -> ElementMaker:
 
 
 @cache
-def _element_maker() -> ElementMaker:
+def _element_maker():
     return container_element_maker()
 
 

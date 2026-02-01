@@ -3,11 +3,11 @@ from functools import cache
 
 from .content_document import EPUB_NAMESPACE, epub_xhtml_element_maker
 from ..libxml.html import HtmlElement
-from ..libxml.xml import ElementMaker, QName
+from ..libxml.xml import QName
 
 
 @cache
-def _element_maker() -> ElementMaker:
+def _element_maker():
     return epub_xhtml_element_maker()
 
 

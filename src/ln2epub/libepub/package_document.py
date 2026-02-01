@@ -17,7 +17,7 @@ OPF_NAMESPACE: Final[LiteralString] = 'http://www.idpf.org/2007/opf'
 _DC_IDENTIFIER_ID: Final[LiteralString] = 'dc-identifier'
 
 
-def opf_element_maker() -> ElementMaker:
+def opf_element_maker() -> ElementMaker[Element]:
     em = xml_element_maker(
         namespace=OPF_NAMESPACE,
         nsmap={
@@ -30,7 +30,7 @@ def opf_element_maker() -> ElementMaker:
 
 
 @cache
-def _element_maker() -> ElementMaker:
+def _element_maker():
     return opf_element_maker()
 
 

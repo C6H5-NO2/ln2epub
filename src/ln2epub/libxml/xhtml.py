@@ -1,6 +1,7 @@
 from functools import cache
 from typing import Final, LiteralString
 
+from lxml.builder import ElementMaker as _ElementMaker
 from lxml.html import xhtml_parser
 
 from .html import HtmlElement
@@ -12,8 +13,8 @@ XHTML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/1999/xhtml'
 def xhtml_element_maker(
     *,
     nsmap: dict[str, str] = None,
-) -> ElementMaker:
-    em = ElementMaker(
+) -> ElementMaker[HtmlElement]:
+    em = _ElementMaker(
         namespace=XHTML_NAMESPACE,
         nsmap=(nsmap if nsmap else {}) | {
             None: XHTML_NAMESPACE,
@@ -25,7 +26,7 @@ def xhtml_element_maker(
 
 
 @cache
-def _element_maker() -> ElementMaker:
+def _element_maker():
     return xhtml_element_maker()
 
 
