@@ -2,7 +2,7 @@ from functools import cache
 from typing import Final, LiteralString
 
 from lxml.builder import ElementMaker as _ElementMaker
-from lxml.html import xhtml_parser
+from lxml.html import html_to_xhtml as _html_to_xhtml, xhtml_parser, xhtml_to_html as _xhtml_to_html
 
 from .html import HtmlElement
 from .xml import Element, ElementMaker, QName, XML_NAMESPACE, _xml_dump
@@ -49,3 +49,11 @@ def xhtml_dump(el: Element, fp) -> None:
         fp,
         doctype='<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>',
     )
+
+
+def html_to_xhtml(el: HtmlElement, /) -> None:
+    _html_to_xhtml(el)
+
+
+def xhtml_to_html(el: HtmlElement, /) -> None:
+    _xhtml_to_html(el)

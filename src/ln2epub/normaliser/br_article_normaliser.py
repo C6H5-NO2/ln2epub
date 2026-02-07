@@ -10,6 +10,13 @@ class BrArticleNormaliser:
     def __init__(self, em: ElementMaker[HtmlElement] = None):
         self._em: ElementMaker[HtmlElement] = em if em is not None else html_element_maker()
 
+    def select_main(self, html: HtmlElement) -> HtmlElement:
+        article_iter = html.iter('article', f'{{{XHTML_NAMESPACE}}}article')
+        article = next(article_iter, None)
+        if article is None:
+            raise ValueError('no <article>')
+        return article
+
     def normalise(self, article: HtmlElement) -> HtmlElement:
         div: HtmlElement = self._em.div()
 
@@ -77,6 +84,7 @@ class BrArticleNormaliser:
 
     def _norm_line(self, line: HtmlElement, target_parent: HtmlElement) -> None:
         assert line.getparent() is None
+        assert line.tail is None
 
         # strip leading and trailing whitespace in direct text content of <line>
         whitespace = '\u0020\u00a0\u3000'
@@ -97,17 +105,19 @@ class BrArticleNormaliser:
                 if not prev.text and len(prev) and all(self._normed_tag(ch) == 'br' for ch in prev):
                     prev.append(br)
                     return
+            line.text = ''  # force '' to make it single line
             line.append(br)
             target_parent.append(line)
             return
 
-        # promote single-line <span><img></span> into direct <div>
+        # promote single-line <span><img></span> into direct <div><img></div>
         if (imgs := line.cssselect('span > img[src][alt]')) and len(imgs) == 1:
             span = unwrap_sole_child(line)
             img = unwrap_sole_child(span)
             if img is not None and img == imgs[0]:
                 line.remove(span)
                 span.tag = 'div'
+                span.tail = None  # force None to allow line break
                 target_parent.append(span)
                 return
 
@@ -160,6 +170,8 @@ class BrArticleNormaliser:
             # force `alt` to hint downstream
             normed_img.set('alt', img.get('src'))
         span = self._em.span(normed_img)
+        span.tail = normed_img.tail
+        normed_img.tail = None
         target_parent.append(span)
 
     def _norm_el_ruby(self, ruby: HtmlElement, target_parent: HtmlElement) -> None:
@@ -167,10 +179,10 @@ class BrArticleNormaliser:
         for child in ruby:
             match self._normed_tag(child):
                 case 'rb' | 'rp' | 'rt' as tag:
-                    target_rx = self._norm_by_copy(child, normed_ruby)
+                    normed_rx = self._norm_by_copy(child, normed_ruby, tag=tag)
                     if tag == 'rb':
                         # <rb> is deprecated
-                        target_rx.drop_tag()
+                        normed_rx.drop_tag()
                 case _:
                     self._norm(child, normed_ruby)
         target_parent.append(normed_ruby)
