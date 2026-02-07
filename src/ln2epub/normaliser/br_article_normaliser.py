@@ -10,13 +10,6 @@ class BrArticleNormaliser:
     def __init__(self, em: ElementMaker[HtmlElement] = None):
         self._em: ElementMaker[HtmlElement] = em if em is not None else html_element_maker()
 
-    def select_main(self, html: HtmlElement) -> HtmlElement:
-        article_iter = html.iter('article', f'{{{XHTML_NAMESPACE}}}article')
-        article = next(article_iter, None)
-        if article is None:
-            raise ValueError('no <article>')
-        return article
-
     def normalise(self, article: HtmlElement) -> HtmlElement:
         div: HtmlElement = self._em.div()
 
