@@ -9,5 +9,5 @@ class CssPatternSelector:
         css_selector = self._css_selector
         el_list = html.cssselect(css_selector)
         if not el_list:
-            raise ValueError(f'no match for {css_selector}')
+            raise ValueError(f'no match for css selector `{css_selector}`')
         return el_list[0]

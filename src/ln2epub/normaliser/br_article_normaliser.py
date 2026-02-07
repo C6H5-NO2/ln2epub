@@ -39,7 +39,7 @@ class BrArticleNormaliser:
         if not tag:
             raise ValueError('element has empty tag')
         if tag[0] == '{':
-            if len(tag) > len(XHTML_NAMESPACE) + 2 and tag.startswith(f'{{{XHTML_NAMESPACE}}}'):
+            if len(tag) > len(XHTML_NAMESPACE) + 2 and tag.startswith(XHTML_NAMESPACE + '}', 1):
                 return tag[len(XHTML_NAMESPACE) + 2:]
             else:
                 raise ValueError(f'element <{tag}> has namespaced tag')
