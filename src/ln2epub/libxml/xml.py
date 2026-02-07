@@ -1,7 +1,14 @@
-from typing import Final, LiteralString, Protocol
+from io import Writer
+from typing import Final, Literal, LiteralString, Protocol
 
 from lxml.builder import ElementMaker as _ElementMaker
-from lxml.etree import Element as makeelement, ElementTree, QName as _QName, _Element, _ElementTree
+from lxml.etree import (
+    Element as makeelement,
+    ElementTree,
+    QName as _QName,
+    _Element,
+    _ElementTree,
+)
 
 XML_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/XML/1998/namespace'
 XMLNS_NAMESPACE: Final[LiteralString] = 'http://www.w3.org/2000/xmlns/'
@@ -38,25 +45,27 @@ def xml_element_maker(
     return em
 
 
-def xml_dump(el: Element, fp) -> None:
+def xml_dump(el: Element, fp: str | Writer[bytes], /) -> None:
     _xml_dump(el, fp)
 
 
 def _xml_dump(
     el: Element,
-    fp,
+    fp: str | Writer[bytes],
+    /,
     *,
+    method: Literal['xml', 'html'] = 'xml',
     doctype: str | None = '<?xml version="1.0" encoding="utf-8"?>',
 ) -> None:
     if not hasattr(fp, 'write'):
         with open(fp, 'wb') as fp:
-            _xml_dump(el, fp, doctype=doctype)
+            _xml_dump(el, fp, method=method, doctype=doctype)
         return
     et: _ElementTree = ElementTree(el)
     et.write(
         fp,
         encoding='utf-8',
-        method='xml',
+        method=method,
         pretty_print=True,
         xml_declaration=False,
         with_tail=False,
