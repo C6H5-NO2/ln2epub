@@ -70,7 +70,7 @@ _xhtml_parser: Final[XHTMLParser] = XHTMLParser(
     encoding='utf-8',
     no_network=True,
     huge_tree=False,
-    remove_blank_text=False,
+    remove_blank_text=True,
     remove_comments=True,
     remove_pis=True,
 )
