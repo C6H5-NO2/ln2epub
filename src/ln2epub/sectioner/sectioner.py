@@ -1,6 +1,15 @@
+import re
 from typing import Protocol
 
 from ..libxml.html import HtmlElement
+
+
+def is_valid_identifier(identifier: str | None) -> bool:
+    if not identifier:
+        return False
+    if len(identifier) not in range(1, 256):
+        return False
+    return not not re.fullmatch(r'[\w\-]+', identifier, re.ASCII)
 
 
 class Sectioner(Protocol):
