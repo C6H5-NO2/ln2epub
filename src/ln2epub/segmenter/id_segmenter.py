@@ -12,7 +12,7 @@ ID_PREFIX: Final[LiteralString] = NAME + '-'
 class IdSegmenter:
     def segment(self, div: HtmlElement) -> dict[str, HtmlElement]:
         """
-        :param div: A normalised <div> having <section id="ln2epub-id">s.
+        :param div: A normalised <div> containing <section id="ln2epub-id">s.
         """
         sect_dict: dict[str, HtmlElement] = dict()
         sect_set: set[HtmlElement] = set()

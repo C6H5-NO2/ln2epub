@@ -15,7 +15,7 @@ def is_valid_identifier(identifier: str | None) -> bool:
 class Segmenter(Protocol):
     def segment(self, div: HtmlElement, /) -> dict[str, HtmlElement]:
         """
-        :param div: A normalised <div>.
+        :param div: A normalised <div>. NB It may be modified in-place.
         :return: A mapping from identifiers to <section>s.
         """
         ...
