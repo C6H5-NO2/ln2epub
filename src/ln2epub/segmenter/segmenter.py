@@ -12,10 +12,10 @@ def is_valid_identifier(identifier: str | None) -> bool:
     return not not re.fullmatch(r'[\w\-]+', identifier, re.ASCII)
 
 
-class Sectioner(Protocol):
-    def section(self, html: HtmlElement, /) -> dict[str, HtmlElement]:
+class Segmenter(Protocol):
+    def segment(self, div: HtmlElement, /) -> dict[str, HtmlElement]:
         """
-        :param html: An element where possible <section>s MUST only appear in the normalised <div>.
+        :param div: A normalised <div>.
         :return: A mapping from identifiers to <section>s.
         """
         ...

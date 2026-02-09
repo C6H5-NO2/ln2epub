@@ -1,14 +1,19 @@
-from .sectioner import is_valid_identifier
+from .segmenter import is_valid_identifier
 from ..libxml.html import HtmlElement
 from ..libxml.xhtml import xhtml_element_maker
 
 
-class LinenoSectioner:
+class LinenoSegmenter:
     def __init__(self, sect_ranges: dict[str, range]):
         self._sect_ranges = self._validate_sect_ranges(sect_ranges)
         self._em = xhtml_element_maker()
 
-    def section(self, div: HtmlElement) -> dict[str, HtmlElement]:
+    def segment(self, div: HtmlElement) -> dict[str, HtmlElement]:
+        """
+        :param div: A normalised <div> with source line number metadata.
+        """
+        if div.sourceline is None:
+            raise ValueError('source line unknown')
         el_iter = div.iterchildren()
         el: HtmlElement | None = next(el_iter, None)
         sect_dict = dict()
