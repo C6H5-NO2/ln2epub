@@ -7,9 +7,9 @@ from ..libxml.html import HtmlElement
 class BaseRelinker(ABC):
     @final
     def relink(self, div: HtmlElement) -> dict[str, str]:
+        results: dict[str, str] = dict()
         # copy-pasted from `HtmlElement.rewrite_links`
         # https://github.com/lxml/lxml/blob/lxml-6.0.2/src/lxml/html/__init__.py#L601
-        results: dict[str, str] = dict()
         for el, attrib, link, pos in div.iterlinks():
             new_link, file_path = self._replace_link(link=link, el=el, attrib=attrib, pos=pos)
             if new_link and file_path:
@@ -37,9 +37,15 @@ class BaseRelinker(ABC):
         return results
 
     @abstractmethod
-    def _replace_link(self, link: str, el: HtmlElement, attrib: str | None, pos: int) -> tuple[str | None, str | None]:
+    def _replace_link(
+        self,
+        link: str,
+        el: HtmlElement,
+        attrib: str | None,
+        pos: int,
+    ) -> tuple[str, str | None] | tuple[None, None]:
         """
         :param link: See `HtmlElement.iterlinks`.
-        :return: A tuple of relinked link url and local file path, if any.
+        :return: A tuple of relinked contained url and local file path, if any.
         """
         ...
