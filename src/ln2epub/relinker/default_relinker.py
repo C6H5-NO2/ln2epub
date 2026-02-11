@@ -3,12 +3,14 @@ from mimetypes import guess_file_type
 from urllib.parse import unquote, urlsplit
 
 from .base_relinker import BaseRelinker
-from ..libepub.expanded_epub import AUDIO, FONT, IMAGE, SCRIPT, STYLE, TEXT
+from ..libepub.expanded_epub import AUDIO, EPUB, FONT, IMAGE, SCRIPT, STYLE, TEXT
 
 
 class DefaultRelinker(BaseRelinker):
     def _replace_link(self, link, el, attrib, pos):
         link = link.strip('\u0020')
+
+        # parse filename
         if not link:
             raise ValueError('empty link')
         rst = urlsplit(link)
@@ -23,44 +25,40 @@ class DefaultRelinker(BaseRelinker):
         rst = os.path.basename(rst)
         if not rst:
             raise ValueError(f'empty filename in link `{link}`')
+
+        # dispatch file by type into folder
         file_name = rst
         file_type, _ = guess_file_type(file_name)
-        # todo
+        folder = 'misc'
         match file_type:
             case None:
-                raise NotImplementedError()
+                raise ValueError(f'unknown filetype of link `{link}`')
 
             case ft if ft.startswith('image/'):
                 folder = IMAGE
-                raise NotImplementedError()
 
             case 'application/xhtml+xml':
                 folder = TEXT
-                raise NotImplementedError()
 
             case 'text/css':
                 folder = STYLE
-                raise NotImplementedError()
 
             case 'application/javascript':
                 folder = SCRIPT
-                raise NotImplementedError()
 
             case ft if ft.startswith('audio/'):
                 folder = AUDIO
-                raise NotImplementedError()
 
             case ft if ft.startswith('font/'):
                 folder = FONT
-                raise NotImplementedError()
-
-            case ft if ft.startswith('text/'):
-                raise NotImplementedError()
-
-            case ft if ft.startswith('video/'):
-                raise NotImplementedError()
 
             case _:
-                raise NotImplementedError()
+                raise ValueError(f'unknown filetype `{file_type}` of link `{link}`')
 
-        raise NotImplementedError()
+        # get relative url
+        file_url = f'{EPUB}/{folder}/{file_name}'
+        self_folder = f'{EPUB}/{TEXT}/'  # the default folder for .xhtml
+        # delegate the validation of this url to caller
+        file_url = os.path.relpath(file_url, start=self_folder).replace(os.path.sep, '/')
+        file_path = file_name  # prepend path outside
+        return file_url, file_path

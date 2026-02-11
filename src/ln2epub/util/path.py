@@ -2,12 +2,7 @@ import os.path
 import re
 
 
-def contained_url(
-    path: str,
-    *,
-    root: str,
-    strict: bool = True,
-) -> str | None:
+def contained_url(path: str, *, root: str, strict: bool = True) -> str | None:
     path = os.path.abspath(path)
     root = os.path.abspath(root)
     try:
@@ -22,23 +17,14 @@ def contained_url(
         return None
 
 
-def require_contained(
-    path: str,
-    *,
-    root: str,
-) -> None:
+def require_contained(path: str, *, root: str) -> None:
     path = os.path.abspath(path)
     root = os.path.abspath(root)
     if not contained_url(path, root=root):
         raise PermissionError(path)
 
 
-def relative_url(
-    path: str,
-    *,
-    start: str,
-    root: str,
-) -> str | None:
+def relative_url(path: str, *, start: str, root: str) -> str | None:
     path = contained_url(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))
     start_dir = contained_url(start_dir, root=root, strict=False)
@@ -48,9 +34,7 @@ def relative_url(
     return None
 
 
-def make_ancestors(
-    path: str,
-) -> str:
+def make_ancestors(path: str) -> str:
     path = os.path.abspath(path)
     parent = os.path.dirname(path)
     os.makedirs(parent, exist_ok=True)
