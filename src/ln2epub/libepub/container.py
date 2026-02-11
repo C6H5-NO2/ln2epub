@@ -11,6 +11,9 @@ class ContainerBuilder:
     container_file_builder: ContainerFileBuilder
 
     def build(self) -> str:
+        """
+        :return: abs root dir
+        """
         root = os.path.abspath(self.root_directory)
         if os.path.exists(root):
             raise FileExistsError(root)

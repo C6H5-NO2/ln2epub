@@ -11,6 +11,9 @@ class ContainerResourceBuilder:
     dst_url: str
 
     def build(self, root_directory: str) -> str:
+        """
+        :return: abs dst path
+        """
         src = os.path.abspath(self.src_path)
         root = os.path.abspath(root_directory)
         dst = os.path.normpath(os.path.join(root, self.dst_url))

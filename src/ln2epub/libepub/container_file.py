@@ -27,6 +27,9 @@ class ContainerFileBuilder:
     package_document_url: str = 'EPUB/package.opf'
 
     def build(self) -> Element:
+        """
+        :return: <container>
+        """
         em = _element_maker()
         container = em.container(
             em.rootfiles(

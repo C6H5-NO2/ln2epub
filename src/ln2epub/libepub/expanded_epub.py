@@ -32,6 +32,9 @@ class ExpandedEpubBuilder:
     container_resources: list[ContainerResourceBuilder]
 
     def build(self) -> str:
+        """
+        :return: abs root dir
+        """
         root = self.container_builder.build()
         if not os.path.isdir(root):
             raise NotADirectoryError(root)

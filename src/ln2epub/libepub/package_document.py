@@ -88,6 +88,9 @@ class PackageDocumentBuilder:
             setter.dcterms_modified = datetime_iso8601()
 
     def build(self) -> Element:
+        """
+        :return: <package>
+        """
         em = _element_maker()
         metadata = self._build_metadata()
         manifest = self._build_manifest()

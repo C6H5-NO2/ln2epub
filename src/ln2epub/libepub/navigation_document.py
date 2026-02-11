@@ -43,6 +43,9 @@ class NavigationDocumentBuilder:
     items: list[NavigationItemBuilder]
 
     def build(self) -> HtmlElement:
+        """
+        :return: <nav>
+        """
         em = _element_maker()
         nav: HtmlElement = em.nav()
         nav.set(QName(EPUB_NAMESPACE, 'type'), 'toc')
