@@ -11,9 +11,9 @@ class BaseRelinker(ABC):
         # copy-pasted from `HtmlElement.rewrite_links`
         # https://github.com/lxml/lxml/blob/lxml-6.0.2/src/lxml/html/__init__.py#L601
         for el, attrib, link, pos in div.iterlinks():
-            new_link, file_path = self._replace_link(link=link, el=el, attrib=attrib, pos=pos)
-            if new_link and file_path:
-                results[new_link] = file_path
+            new_link, dst_url, src_path = self._replace_link(link=link, el=el, attrib=attrib, pos=pos)
+            if new_link and dst_url and src_path:
+                results[dst_url] = src_path
             if new_link == link:
                 continue
             if new_link is None:
@@ -43,9 +43,9 @@ class BaseRelinker(ABC):
         el: HtmlElement,
         attrib: str | None,
         pos: int,
-    ) -> tuple[str, str | None] | tuple[None, None]:
+    ) -> tuple[str, str, str] | tuple[str, None, None] | tuple[None, None, None]:
         """
         :param link: See `HtmlElement.iterlinks`.
-        :return: A tuple of relinked contained url and local file path, if any.
+        :return: A tuple of the new link for el and the linked file's dst url and src path, if any.
         """
         ...

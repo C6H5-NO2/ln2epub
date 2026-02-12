@@ -55,10 +55,9 @@ class DefaultRelinker(BaseRelinker):
             case _:
                 raise ValueError(f'unknown filetype `{file_type}` of link `{link}`')
 
-        # get relative url
-        file_url = f'{EPUB}/{folder}/{file_name}'
-        self_folder = f'{EPUB}/{TEXT}/'  # the default folder for .xhtml
-        # delegate the validation of this url to caller
-        file_url = os.path.relpath(file_url, start=self_folder).replace(os.path.sep, '/')
-        file_path = file_name  # prepend path outside
-        return file_url, file_path
+        # todo: allow overriding
+        dst_url = f'{EPUB}/{folder}/{file_name}'  # delegate the validation of this url to caller
+        self_folder = f'{EPUB}/{TEXT}/'  # the default folder for xhtml files
+        new_link = os.path.relpath(dst_url, start=self_folder).replace(os.path.sep, '/')
+        src_path = file_name  # prepend path outside
+        return new_link, dst_url, src_path
