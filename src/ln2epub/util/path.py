@@ -3,6 +3,11 @@ import re
 
 
 def contained_url(path: str, *, root: str, strict: bool = True) -> str | None:
+    """
+    :param path: Local file/directory path
+    :param root: Local directory path
+    :return: Contained url if so
+    """
     path = os.path.abspath(path)
     root = os.path.abspath(root)
     try:
@@ -17,14 +22,25 @@ def contained_url(path: str, *, root: str, strict: bool = True) -> str | None:
         return None
 
 
-def require_contained(path: str, *, root: str) -> None:
-    path = os.path.abspath(path)
-    root = os.path.abspath(root)
-    if not contained_url(path, root=root):
+def require_contained(path: str, *, root: str) -> str:
+    """
+    :param path: Local file/directory path
+    :param root: Local directory path
+    :return: Contained url or raise
+    """
+    url = contained_url(path, root=root, strict=True)
+    if not url:
         raise PermissionError(path)
+    return url
 
 
 def relative_url(path: str, *, start: str, root: str) -> str | None:
+    """
+    :param path: Local file/directory path
+    :param start: Local file/directory path
+    :param root: Local directory path
+    :return: Relative url of `path` to `parent(start)` if so
+    """
     path = contained_url(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))
     start_dir = contained_url(start_dir, root=root, strict=False)
@@ -46,7 +62,7 @@ def is_valid_filename(filename: str) -> bool:
     This function is designed to be rather conservative.
     """
     if len(filename) not in range(1, 128):
-        # technically, most filesystems allow filenames up to 255 chars
+        # technically, most filesystems (incl OCF) allow filenames less than 256 chars
         # however, `filename` often gets pre-/suffixes appended later so let's be conservative here
         return False
     if filename[-1] == '.':
@@ -60,3 +76,16 @@ def is_valid_filename(filename: str) -> bool:
         # not "portable filename"
         return False
     return True
+
+
+def is_valid_contained_url(url: str) -> bool:
+    """
+    This function is designed to be rather conservative.
+    NB Only validates the format, NOT whether it is contained.
+    """
+    if len(url) not in range(1, 65536):
+        return False
+    if url[0] == '/':
+        return False
+    names = url.split('/')
+    return all(name == '..' or is_valid_filename(name) for name in names)
