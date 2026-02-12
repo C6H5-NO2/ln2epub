@@ -109,9 +109,11 @@ class BrArticleNormaliser:
             img = unwrap_sole_child(span)
             if img is not None and img == imgs[0]:
                 line.remove(span)
-                span.tag = 'div'
-                span.tail = None  # force None to allow line break
-                target_parent.append(span)
+                div = span
+                div.tag = 'div'
+                div.text = ''
+                div.tail = None  # force None to allow line break
+                target_parent.append(div)
                 return
 
         target_parent.append(line)
