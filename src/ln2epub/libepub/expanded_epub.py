@@ -37,6 +37,7 @@ class ExpandedEpubBuilder:
             raise NotADirectoryError(root)
 
         container_file = os.path.join(root, 'META-INF', 'container.xml')
+        require_contained(container_file, root=root)
         el = self.container_file_builder.build()
         xml_dump(el, container_file)
         del el

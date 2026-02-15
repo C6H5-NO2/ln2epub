@@ -4,7 +4,7 @@ from functools import cache
 from typing import Final, LiteralString
 
 from .navigation_document import NavigationDocumentBuilder, NavigationItemBuilder
-from ..libxml.xml import Element, ElementMaker, xml_element_maker
+from ..libxml.xml import Element, ElementMaker, QName, XML_NAMESPACE, xml_element_maker
 from ..util.frozenlist import frozenlist
 
 NCX_NAMESPACE: Final[LiteralString] = 'http://www.daisy.org/z3986/2005/ncx/'
@@ -28,6 +28,7 @@ def _element_maker():
 class NcxBuilder:
     nav_builder: NavigationDocumentBuilder
     dc_identifier: str
+    xml_lang: str | None = None
 
     def build(self) -> Element:
         em = _element_maker()
@@ -35,6 +36,8 @@ class NcxBuilder:
         doc_title = em.docTitle(em.text(self.nav_builder.heading))
         nav_map = self._build_nav_map(self.nav_builder.items)
         ncx = em.ncx(head, doc_title, nav_map, version='2005-1')
+        if self.xml_lang:
+            ncx.set(QName(XML_NAMESPACE, 'lang'), self.xml_lang)
         return ncx
 
     def _build_nav_map(self, items: frozenlist[NavigationItemBuilder]) -> Element:

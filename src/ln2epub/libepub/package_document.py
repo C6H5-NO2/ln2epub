@@ -5,7 +5,7 @@ from os.path import basename
 from typing import Final, Literal, LiteralString
 from uuid import uuid4
 
-from ..libxml.xml import Element, ElementMaker, QName, xml_element_maker
+from ..libxml.xml import Element, ElementMaker, QName, XML_NAMESPACE, xml_element_maker
 from ..util.dataclass import _attr_setter
 from ..util.datetime import datetime_iso8601
 from ..util.frozenlist import frozenlist
@@ -79,6 +79,7 @@ class PackageDocumentBuilder:
     app_generator: str | None = f'{NAME} v{VERSION}'
     app_generated_by: str | None = None
     items: frozenlist[PublicationResourceItemBuilder]
+    xml_lang: str | None = None
 
     # noinspection PyDataclass
     def __post_init__(self):
@@ -106,6 +107,8 @@ class PackageDocumentBuilder:
                 'version': '3.0',
             },
         )
+        if self.xml_lang:
+            package.set(QName(XML_NAMESPACE, 'lang'), self.xml_lang)
         return package
 
     def _build_metadata(self) -> Element:
