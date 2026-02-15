@@ -50,7 +50,7 @@ class ExpandedEpubBuilder:
         require_contained(navigation_document, root=root)
         make_ancestors(navigation_document)
         el = self.navigation_document_builder.build()
-        el = xhtml_document(el, lang=self.pacakge_document_builder.dc_language)
+        el = xhtml_document(el, lang=self.pacakge_document_builder.dc_language, title='nav')
         xhtml_dump(el, navigation_document)
 
         for container_resource in self.container_resources:
