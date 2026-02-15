@@ -57,7 +57,7 @@ class DefaultRelinker(BaseRelinker):
                 raise ValueError(f'unknown filetype `{file_type}` of link `{link}`')
 
         # todo: allow overriding
-        dst_url = f'{EPUB}/{folder}/{file_name}'  # delegate the validation of this url to caller
+        dst_url = f'{EPUB}/{folder}/_{file_name}'  # delegate validation to caller; an `_` is added intentionally
         self_folder = f'{EPUB}/{TEXT}/'  # the default folder for xhtml files
         new_link = relative_url(dst_url, start=f'{self_folder}/.xhtml', root='./', mode='url')
         src_path = file_name  # prepend path outside
