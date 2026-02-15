@@ -10,7 +10,7 @@ class EpubCheck:
     java: str = 'java'
     epubcheck: str = 'epubcheck.jar'
     root_directory: str
-    strict: bool = True
+    strict: bool = False
     overwrite: bool = False
 
     def build(self) -> str:
@@ -37,6 +37,8 @@ class EpubCheck:
         ]
         if self.strict:
             args.append('--failonwarnings')
+        else:
+            args.append('--fatal')
         process = subprocess.run(
             args=args,
             shell=False,
