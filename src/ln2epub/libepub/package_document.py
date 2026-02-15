@@ -8,6 +8,7 @@ from uuid import uuid4
 from ..libxml.xml import Element, ElementMaker, QName, xml_element_maker
 from ..util.dataclass import _attr_setter
 from ..util.datetime import datetime_iso8601
+from ..util.frozenlist import frozenlist
 from ..version import NAME, VERSION
 
 DC_NAMESPACE: Final[LiteralString] = 'http://purl.org/dc/elements/1.1/'
@@ -77,7 +78,7 @@ class PackageDocumentBuilder:
     dc_creator: str | None = None
     app_generator: str | None = f'{NAME} v{VERSION}'
     app_generated_by: str | None = None
-    items: list[PublicationResourceItemBuilder]
+    items: frozenlist[PublicationResourceItemBuilder]
 
     # noinspection PyDataclass
     def __post_init__(self):
@@ -108,7 +109,7 @@ class PackageDocumentBuilder:
 
     def _build_metadata(self) -> Element:
         em = _element_maker()
-        metadata: Element = em.metadata()
+        metadata = em.metadata()
 
         dc_identifier = em(QName(DC_NAMESPACE, 'identifier'), self.dc_identifier, id=_DC_IDENTIFIER_ID)
         dc_title = em(QName(DC_NAMESPACE, 'title'), self.dc_title)
@@ -134,7 +135,7 @@ class PackageDocumentBuilder:
 
     def _build_manifest(self) -> Element:
         em = _element_maker()
-        manifest: Element = em.manifest()
+        manifest = em.manifest()
         for it in self.items:
             item = it._build_manifest_item()
             manifest.append(item)
@@ -142,7 +143,7 @@ class PackageDocumentBuilder:
 
     def _build_spine(self) -> Element:
         em = _element_maker()
-        spine: Element = em.spine()
+        spine = em.spine()
         items = sorted(
             (it for it in self.items if it.reading_order is not None),
             key=lambda it: it.reading_order,

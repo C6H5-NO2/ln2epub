@@ -1,5 +1,6 @@
 import os.path
 import re
+from typing import Literal
 
 
 def contained_url(path: str, *, root: str, strict: bool = True) -> str | None:
@@ -34,13 +35,34 @@ def require_contained(path: str, *, root: str) -> str:
     return url
 
 
-def relative_url(path: str, *, start: str, root: str) -> str | None:
+def relative_url(
+    path: str,
+    *,
+    start: str,
+    root: str,
+    mode: Literal['path', 'url'] = 'path',
+) -> str | None:
     """
     :param path: Local file/directory path
-    :param start: Local file/directory path
+    :param start: Local file path
     :param root: Local directory path
     :return: Relative url of `path` to `parent(start)` if so
+    :param mode: If `url`, `path` and `start` are interpreted as url.
     """
+    match mode:
+        case 'path':
+            pass
+
+        case 'url':
+            return relative_url(
+                path=os.path.join(root, path),
+                start=os.path.join(root, start),
+                root=root,
+                mode='path',
+            )
+
+        case _:
+            raise ValueError(mode)
     path = contained_url(path, root=root, strict=False)
     start_dir = os.path.dirname(os.path.abspath(start))
     start_dir = contained_url(start_dir, root=root, strict=False)

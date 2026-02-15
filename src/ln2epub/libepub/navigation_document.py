@@ -4,6 +4,7 @@ from functools import cache
 from .content_document import EPUB_NAMESPACE, epub_xhtml_element_maker
 from ..libxml.html import HtmlElement
 from ..libxml.xml import QName
+from ..util.frozenlist import frozenlist
 
 
 @cache
@@ -15,11 +16,11 @@ def _element_maker():
 class NavigationItemBuilder:
     text: str
     href: str | None = None
-    items: list[NavigationItemBuilder] | None = None
+    items: frozenlist[NavigationItemBuilder] | None = None
 
     def _build_li(self) -> HtmlElement:
         em = _element_maker()
-        li: HtmlElement = em.li()
+        li = em.li()
 
         if self.href:
             el = em.a(self.text, href=self.href)
@@ -28,11 +29,13 @@ class NavigationItemBuilder:
         li.append(el)
 
         if self.items:
-            sub_ol: HtmlElement = em.ol()
+            sub_ol = em.ol()
             li.append(sub_ol)
             for it in self.items:
                 sub_li = it._build_li()
                 sub_ol.append(sub_li)
+        else:
+            li.text = ''
 
         return li
 
@@ -40,14 +43,14 @@ class NavigationItemBuilder:
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class NavigationDocumentBuilder:
     heading: str | None = None
-    items: list[NavigationItemBuilder]
+    items: frozenlist[NavigationItemBuilder]
 
     def build(self) -> HtmlElement:
         """
         :return: <nav>
         """
         em = _element_maker()
-        nav: HtmlElement = em.nav()
+        nav = em.nav()
         nav.set(QName(EPUB_NAMESPACE, 'type'), 'toc')
         if self.heading:
             h1 = em.h1(self.heading)
@@ -56,9 +59,9 @@ class NavigationDocumentBuilder:
         nav.append(ol)
         return nav
 
-    def _build_ol(self, items: list[NavigationItemBuilder]) -> HtmlElement:
+    def _build_ol(self, items: frozenlist[NavigationItemBuilder]) -> HtmlElement:
         em = _element_maker()
-        ol: HtmlElement = em.ol()
+        ol = em.ol()
         for it in items:
             li = it._build_li()
             ol.append(li)

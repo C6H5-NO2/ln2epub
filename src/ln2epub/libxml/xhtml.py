@@ -57,9 +57,9 @@ def xhtml_document(
     title: str = '',
 ) -> HtmlElement:
     em = _xhtml_element_maker
-    head: HtmlElement = em.head(em.title(title))
-    body: HtmlElement = em.body(*body_children)
-    html: HtmlElement = em.html(head, body)
+    head = em.head(em.title(title))
+    body = em.body(*body_children)
+    html = em.html(head, body)
     html.set(QName(XML_NAMESPACE, 'lang'), lang)
     return html
 

@@ -4,6 +4,7 @@ from urllib.parse import unquote, urlsplit
 
 from .base_relinker import BaseRelinker
 from ..libepub.expanded_epub import AUDIO, EPUB, FONT, IMAGE, SCRIPT, STYLE, TEXT
+from ..util.path import relative_url
 
 
 class DefaultRelinker(BaseRelinker):
@@ -58,6 +59,6 @@ class DefaultRelinker(BaseRelinker):
         # todo: allow overriding
         dst_url = f'{EPUB}/{folder}/{file_name}'  # delegate the validation of this url to caller
         self_folder = f'{EPUB}/{TEXT}/'  # the default folder for xhtml files
-        new_link = os.path.relpath(dst_url, start=self_folder).replace(os.path.sep, '/')
+        new_link = relative_url(dst_url, start=f'{self_folder}/.xhtml', root='./', mode='url')
         src_path = file_name  # prepend path outside
         return new_link, dst_url, src_path

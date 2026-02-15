@@ -8,6 +8,7 @@ from .navigation_document import NavigationDocumentBuilder
 from .package_document import PackageDocumentBuilder
 from ..libxml.xhtml import xhtml_document, xhtml_dump
 from ..libxml.xml import xml_dump
+from ..util.frozenlist import frozenlist
 from ..util.path import make_ancestors, require_contained
 
 EPUB: Final[LiteralString] = 'EPUB'
@@ -29,7 +30,7 @@ class ExpandedEpubBuilder:
     navigation_document_url: str = f'{EPUB}/{NAV_XHTML}'
     navigation_document_builder: NavigationDocumentBuilder
 
-    container_resources: list[ContainerResourceBuilder]
+    container_resources: frozenlist[ContainerResourceBuilder]
 
     def build(self) -> str:
         """

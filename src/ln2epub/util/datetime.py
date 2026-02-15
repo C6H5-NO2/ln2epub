@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 
-def datetime_iso8601(t: datetime = None) -> str:
+def datetime_iso8601(t: datetime = None, /) -> str:
     if t is None:
         t = datetime.now(UTC)
     else:
