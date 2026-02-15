@@ -14,8 +14,8 @@ def _element_maker():
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class NavigationItemBuilder:
     text: str
-    href: str = None
-    items: list[NavigationItemBuilder] = None
+    href: str | None = None
+    items: list[NavigationItemBuilder] | None = None
 
     def _build_li(self) -> HtmlElement:
         em = _element_maker()
@@ -39,7 +39,7 @@ class NavigationItemBuilder:
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class NavigationDocumentBuilder:
-    heading: str = None
+    heading: str | None = None
     items: list[NavigationItemBuilder]
 
     def build(self) -> HtmlElement:
