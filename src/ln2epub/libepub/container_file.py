@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from functools import cache
 from typing import Final, LiteralString
 
+from .consts import EPUB, PACKAGE_OPF
 from ..libxml.xml import Element, ElementMaker, xml_element_maker
 
 CONTAINER_NAMESPACE: Final[LiteralString] = 'urn:oasis:names:tc:opendocument:xmlns:container'
@@ -24,7 +25,7 @@ def _element_maker():
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerFileBuilder:
-    package_document_url: str = 'EPUB/package.opf'
+    package_document_url: str = f'{EPUB}/{PACKAGE_OPF}'
 
     def build(self) -> Element:
         """

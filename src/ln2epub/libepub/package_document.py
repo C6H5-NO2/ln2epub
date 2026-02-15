@@ -101,6 +101,7 @@ class PackageDocumentBuilder:
             manifest,
             spine,
             **{
+                'prefix': f'app: {NAME}',
                 'unique-identifier': _DC_IDENTIFIER_ID,
                 'version': '3.0',
             },

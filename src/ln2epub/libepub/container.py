@@ -1,14 +1,10 @@
 import os.path
 from dataclasses import dataclass
 
-from .container_file import ContainerFileBuilder
-from ..libxml.xml import xml_dump
-
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class ContainerBuilder:
     root_directory: str
-    container_file_builder: ContainerFileBuilder
 
     def build(self) -> str:
         """
@@ -29,7 +25,3 @@ class ContainerBuilder:
 
         metainf = os.path.join(root, 'META-INF')
         os.makedirs(metainf)
-
-        container_file = os.path.join(metainf, 'container.xml')
-        el = self.container_file_builder.build()
-        xml_dump(el, container_file)

@@ -3,7 +3,7 @@ from mimetypes import guess_file_type
 from urllib.parse import unquote, urlsplit
 
 from .base_relinker import BaseRelinker
-from ..libepub.expanded_epub import AUDIO, EPUB, FONT, IMAGE, SCRIPT, STYLE, TEXT
+from ..libepub.consts import AUDIO, EPUB, FONT, IMAGE, SCRIPT, STYLE, TEXT
 from ..util.path import relative_url
 
 
