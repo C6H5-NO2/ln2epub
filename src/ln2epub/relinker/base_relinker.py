@@ -11,7 +11,7 @@ class BaseRelinker(ABC):
         # copy-pasted from `HtmlElement.rewrite_links`
         # https://github.com/lxml/lxml/blob/lxml-6.0.2/src/lxml/html/__init__.py#L601
         for el, attrib, link, pos in div.iterlinks():
-            new_link, dst_url, src_path = self._replace_link(link=link, el=el, attrib=attrib, pos=pos)
+            new_link, dst_url, src_path = self._replace_link(el=el, attrib=attrib, link=link, pos=pos)
             if new_link and dst_url and src_path:
                 results[dst_url] = src_path
             if new_link == link:
@@ -39,9 +39,9 @@ class BaseRelinker(ABC):
     @abstractmethod
     def _replace_link(
         self,
-        link: str,
         el: HtmlElement,
         attrib: str | None,
+        link: str,
         pos: int,
     ) -> tuple[str, str, str] | tuple[str, None, None] | tuple[None, None, None]:
         """

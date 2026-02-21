@@ -1,5 +1,5 @@
-import os.path
 from mimetypes import guess_file_type
+from os.path import basename
 from urllib.parse import unquote, urlsplit
 
 from .base_relinker import BaseRelinker
@@ -8,10 +8,21 @@ from ..util.path import relative_url
 
 
 class DefaultRelinker(BaseRelinker):
-    def _replace_link(self, link, el, attrib, pos):
+    def _replace_link(self, el, attrib, link, pos):
         link = link.strip('\u0020')
 
-        # parse filename
+        file_name = self._get_file_name(el=el, attrib=attrib, link=link, pos=pos)
+
+        src_path = self._get_src_path(file_name, el=el, attrib=attrib, link=link, pos=pos)
+
+        # dispatch file by type into folder
+        dst_url = self._get_dst_url(file_name, el=el, attrib=attrib, link=link, pos=pos)
+
+        new_link = self._get_new_link(dst_url, el=el, attrib=attrib, link=link, pos=pos)
+
+        return new_link, dst_url, src_path
+
+    def _get_file_name(self, el, attrib, link, pos) -> str:
         if not link:
             raise ValueError('empty link')
         rst = urlsplit(link)
@@ -23,17 +34,24 @@ class DefaultRelinker(BaseRelinker):
             # in most cases, a netloc-only url does not link to a resource
             raise ValueError(f'empty path in link `{link}`')
         rst = unquote(rst.path)
-        rst = os.path.basename(rst)
+        rst = basename(rst)
         if not rst:
             raise ValueError(f'empty filename in link `{link}`')
+        return rst
 
-        # dispatch file by type into folder
-        file_name = rst
+    def _get_new_link(self, dst_url: str, el, attrib, link, pos) -> str:
+        # default url for xhtml files
+        self_url = f'{EPUB}/{TEXT}/xhtml.xhtml'
+        new_link = relative_url(dst_url, start=self_url, root='./', mode='url')
+        return new_link
+
+    def _get_dst_url(self, file_name: str, el, attrib, link, pos) -> str:
         file_type, _ = guess_file_type(file_name)
+
         folder = 'misc'
         match file_type:
             case None:
-                raise ValueError(f'unknown filetype of link `{link}`')
+                raise ValueError(f'unknown filetype of filename `{file_name}`')
 
             case ft if ft.startswith('image/'):
                 folder = IMAGE
@@ -54,11 +72,13 @@ class DefaultRelinker(BaseRelinker):
                 folder = FONT
 
             case _:
-                raise ValueError(f'unknown filetype `{file_type}` of link `{link}`')
+                raise ValueError(f'unexpected filetype `{file_type}` of filename `{file_name}`')
 
-        # todo: allow overriding
-        dst_url = f'{EPUB}/{folder}/_{file_name}'  # delegate validation to caller; an `_` is added intentionally
-        self_folder = f'{EPUB}/{TEXT}/'  # the default folder for xhtml files
-        new_link = relative_url(dst_url, start=f'{self_folder}/.xhtml', root='./', mode='url')
-        src_path = file_name  # prepend path outside
-        return new_link, dst_url, src_path
+        # delegate validation to outside
+        # an `_` is added intentionally
+        dst_url = f'{EPUB}/{folder}/_{file_name}'
+        return dst_url
+
+    def _get_src_path(self, file_name: str, el, attrib, link, pos) -> str:
+        # prepend path outside
+        return file_name

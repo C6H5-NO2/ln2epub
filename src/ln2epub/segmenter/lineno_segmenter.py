@@ -1,12 +1,13 @@
 from .segmenter import is_valid_identifier
 from ..libxml.html import HtmlElement
 from ..libxml.xhtml import xhtml_element_maker
+from ..libxml.xml import ElementMaker
 
 
 class LinenoSegmenter:
     def __init__(self, sect_ranges: dict[str, range]):
-        self._sect_ranges = self._validate_sect_ranges(sect_ranges)
-        self._em = xhtml_element_maker()
+        self._sect_ranges: list[tuple[str, range]] = self._validate_sect_ranges(sect_ranges)
+        self._em: ElementMaker[HtmlElement] = xhtml_element_maker()
 
     def segment(self, div: HtmlElement) -> dict[str, HtmlElement]:
         """
