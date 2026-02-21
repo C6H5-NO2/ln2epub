@@ -45,22 +45,7 @@ class ExpandedEpubBuilder:
         package_document = os.path.join(root, self.package_document_url)
         require_contained(package_document, root=root)
         make_ancestors(package_document)
-        if self.support_legacy_ncx:
-            ncx_url = os.path.join(os.path.dirname(self.navigation_document_url), TOC_NCX)
-            ncx = os.path.join(root, ncx_url)
-            ncx_pri_builder = PublicationResourceItemBuilder(
-                href=relative_url(path=ncx, start=package_document, root=root),
-                media_type='application/x-dtbncx+xml',
-            )
-            pacakge_document_builder = dataclass_replace(
-                self.pacakge_document_builder,
-                items=[*self.pacakge_document_builder.items, ncx_pri_builder],
-            )
-            el = pacakge_document_builder.build()
-            spine = next(el.iterchildren('{*}spine'), None)
-            spine.set('toc', ncx_pri_builder.id)
-        else:
-            el = self.pacakge_document_builder.build()
+        el = self.pacakge_document_builder.build()
         xml_dump(el, package_document)
         del el
 
@@ -73,15 +58,39 @@ class ExpandedEpubBuilder:
         del el
 
         if self.support_legacy_ncx:
-            ncx_builder = NcxBuilder(
-                nav_builder=self.navigation_document_builder,
-                dc_identifier=self.pacakge_document_builder.dc_identifier,
-            )
-            el = ncx_builder.build()
-            xml_dump(el, ncx)
-            del el
+            self._build_ncx(root=root)
 
         for container_resource in self.container_resources:
             container_resource.build(root_directory=root)
 
         return root
+
+    def _build_ncx(self, root: str) -> str:
+        ncx_url = os.path.join(os.path.dirname(self.navigation_document_url), TOC_NCX)
+        ncx = os.path.join(root, ncx_url)
+        require_contained(ncx, root=root)
+
+        package_document = os.path.join(root, self.package_document_url)
+        ncx_pri_builder = PublicationResourceItemBuilder(
+            href=relative_url(path=ncx, start=package_document, root=root),
+            media_type='application/x-dtbncx+xml',
+        )
+        pacakge_document_builder = dataclass_replace(
+            self.pacakge_document_builder,
+            items=[*self.pacakge_document_builder.items, ncx_pri_builder],
+        )
+        el = pacakge_document_builder.build()
+        spine = next(el.iterchildren('{*}spine'), None)
+        spine.set('toc', ncx_pri_builder.id)
+        xml_dump(el, package_document)
+        del el
+
+        ncx_builder = NcxBuilder(
+            nav_builder=self.navigation_document_builder,
+            dc_identifier=self.pacakge_document_builder.dc_identifier,
+        )
+        el = ncx_builder.build()
+        xml_dump(el, ncx)
+        del el
+
+        return ncx

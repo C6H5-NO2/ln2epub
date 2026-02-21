@@ -1,6 +1,6 @@
-import os.path
 from dataclasses import dataclass
 from functools import cache
+from os.path import basename
 from typing import Final, LiteralString
 
 from .navigation_document import NavigationDocumentBuilder, NavigationItemBuilder
@@ -55,7 +55,7 @@ class NcxBuilder:
         nav_point = em.navPoint(
             em.navLabel(em.text(item.text)),
             em.content(src=item.href),
-            id=os.path.basename(item.href),
+            id=basename(item.href),
         )
         if item.items:
             for it in item.items:
