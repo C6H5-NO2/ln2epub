@@ -88,6 +88,7 @@ class PackageDocumentBuilder:
             setter.dc_identifier = f'urn:uuid:{uuid4()}'
         if not self.dcterms_modified:
             setter.dcterms_modified = datetime_iso8601()
+        setter.items = sorted(self.items, key=lambda it: it.href)
 
     def build(self) -> Element:
         """
