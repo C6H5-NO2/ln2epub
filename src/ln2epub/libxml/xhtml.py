@@ -34,7 +34,19 @@ def xhtml_parse(fp: str | Reader[bytes], /) -> HtmlElement:
     return _html_parse(fp, parser=_xhtml_parser)
 
 
-def xhtml_dump(el: HtmlElement, fp: str | Writer[bytes], /) -> None:
+def xhtml_dump(
+    el: HtmlElement,
+    fp: str | Writer[bytes],
+    /,
+    *,
+    compact: bool = False,
+) -> None:
+    if compact:
+        iter_children = el.body.iterchildren() if QName(el.tag).localname == 'html' else el.iterchildren()
+        for child in iter_children:
+            if not child.text and len(child):
+                child.text = ''
+
     _xml_dump(
         el,
         fp,

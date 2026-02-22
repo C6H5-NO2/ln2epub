@@ -3,16 +3,17 @@ import os.path
 from dataclasses import dataclass
 
 from .workspace_stage import WorkspaceStage
-from ..libxml.html import HtmlElement
 from ..libxml.xhtml import XHTML_NAMESPACE, xhtml_document, xhtml_dump, xhtml_parse
+from ..segmenter.segment_title_provider import SegmentTitleProvider
 from ..segmenter.segmenter import Segmenter, is_valid_segment_id
 from ..util.path import is_valid_filename
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class SegmentStage:
-    lang: str
     segmenter: Segmenter
+    segment_title_provider: SegmentTitleProvider
+    lang: str
     force: bool = True
 
     def run(
@@ -31,7 +32,7 @@ class SegmentStage:
                         seg_path = os.path.join(segments_dir, listed_file)
                         seg_files[seg_id] = seg_path
             print(f'reuse segments in `{segments_dir}`')
-            print(json.dumps(seg_files, ensure_ascii=False, indent=2))
+            print(json.dumps(seg_files, ensure_ascii=False, indent=2, sort_keys=True))
             return seg_files
 
         WorkspaceStage(force=self.force).run(workspace_dir=segments_dir)
@@ -48,24 +49,14 @@ class SegmentStage:
             if not is_valid_filename(seg_file):
                 raise PermissionError(seg_file)
             seg_path = os.path.join(segments_dir, seg_file)
-            # *seg_el to drop <section> tag
-            seg_el = xhtml_document(*seg_el, lang=self.lang, title=_get_segment_title(seg_id))
-            _xhtml_dump_preprocess(seg_el)
-            xhtml_dump(seg_el, seg_path)
+            seg_el = xhtml_document(
+                *seg_el,  # *seg_el to drop <section> tag
+                lang=self.lang,
+                title=self.segment_title_provider.get_title(seg_id),
+            )
+            xhtml_dump(seg_el, seg_path, compact=True)
             seg_files[seg_id] = seg_path
 
         print(f'segmented to `{segments_dir}`')
-        print(json.dumps(seg_dict, ensure_ascii=False, indent=2))
+        print(json.dumps(seg_dict, ensure_ascii=False, indent=2, sort_keys=True))
         return seg_files
-
-
-def _xhtml_dump_preprocess(xhtml: HtmlElement) -> None:
-    # todo: better logic?
-    for child in xhtml.body.iterchildren():
-        if not child.text:
-            child.text = ''
-
-
-def _get_segment_title(segment_id: str) -> str:
-    # todo: i18n
-    raise NotImplementedError(segment_id)
