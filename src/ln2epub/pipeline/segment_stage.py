@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from .workspace_stage import WorkspaceStage
 from ..libxml.html import HtmlElement
 from ..libxml.xhtml import XHTML_NAMESPACE, xhtml_document, xhtml_dump, xhtml_parse
-from ..segmenter.segmenter import Segmenter, is_valid_identifier
+from ..segmenter.segmenter import Segmenter, is_valid_segment_id
 from ..util.path import is_valid_filename
 
 
@@ -27,7 +27,7 @@ class SegmentStage:
             for listed_file in listed_files:
                 if listed_file.endswith('.xhtml') and is_valid_filename(listed_file):
                     seg_id = listed_file.removesuffix('.xhtml')
-                    if is_valid_identifier(seg_id):
+                    if is_valid_segment_id(seg_id):
                         seg_path = os.path.join(segments_dir, listed_file)
                         seg_files[seg_id] = seg_path
             print(f'reuse segments in `{segments_dir}`')

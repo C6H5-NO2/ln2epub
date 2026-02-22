@@ -1,12 +1,12 @@
-from .segmenter import is_valid_identifier
+from .segmenter import is_valid_segment_id
 from ..libxml.html import HtmlElement
 from ..libxml.xhtml import xhtml_element_maker
 from ..libxml.xml import ElementMaker
 
 
 class LinenoSegmenter:
-    def __init__(self, sect_ranges: dict[str, range]):
-        self._sect_ranges: list[tuple[str, range]] = self._validate_sect_ranges(sect_ranges)
+    def __init__(self, seg_ranges: dict[str, range]):
+        self._seg_ranges: list[tuple[str, range]] = self._validate_seg_ranges(seg_ranges)
         self._em: ElementMaker[HtmlElement] = xhtml_element_maker()
 
     def segment(self, div: HtmlElement) -> dict[str, HtmlElement]:
@@ -17,36 +17,36 @@ class LinenoSegmenter:
             raise ValueError('source line unknown')
         el_iter = div.iterchildren()
         el: HtmlElement | None = next(el_iter, None)
-        sect_dict = dict()
-        for sect_id, sect_range in self._sect_ranges:
-            while el is not None and el.sourceline < sect_range.start:
+        seg_dict = dict()
+        for seg_id, seg_range in self._seg_ranges:
+            while el is not None and el.sourceline < seg_range.start:
                 el = next(el_iter, None)
-            sect_children: list[HtmlElement] = []
-            while el is not None and el.sourceline < sect_range.stop:
-                sect_children.append(el)
+            seg_children: list[HtmlElement] = []
+            while el is not None and el.sourceline < seg_range.stop:
+                seg_children.append(el)
                 el = next(el_iter, None)
-            if len(sect_children):
-                sect_dict[sect_id] = sect_children
+            if len(seg_children):
+                seg_dict[seg_id] = seg_children
             if el is None:
                 break
 
-        for sect_id in sect_dict:
+        for seg_id in seg_dict:
             section = self._em.section()
-            section.extend(sect_dict[sect_id])
-            sect_dict[sect_id] = section
+            section.extend(seg_dict[seg_id])
+            seg_dict[seg_id] = section
 
-        return sect_dict
+        return seg_dict
 
-    def _validate_sect_ranges(self, ranges: dict[str, range]) -> list[tuple[str, range]]:
+    def _validate_seg_ranges(self, ranges: dict[str, range]) -> list[tuple[str, range]]:
         ranges = list(ranges.items())
         ranges.sort(key=lambda it: it[1].start)
         prev = ('(-inf, 1)', range(0, 1))
-        for sect_id, sect_range in ranges:
-            if not is_valid_identifier(sect_id):
-                raise ValueError(f'invalid section identifier `{sect_id}`')
-            if not (sect_range.start < sect_range.stop and sect_range.step == 1):
-                raise ValueError(f'invalid section range in `{sect_id}`')
-            if sect_range.start < prev[1].stop:
-                raise ValueError(f'overlapping sections `{sect_id}` and `{prev[0]}`')
-            prev = (sect_id, sect_range)
+        for seg_id, seg_range in ranges:
+            if not is_valid_segment_id(seg_id):
+                raise ValueError(f'invalid segment identifier `{seg_id}`')
+            if not (seg_range.start < seg_range.stop and seg_range.step == 1):
+                raise ValueError(f'invalid segment range in `{seg_id}`')
+            if seg_range.start < prev[1].stop:
+                raise ValueError(f'overlapping segments `{seg_id}` and `{prev[0]}`')
+            prev = (seg_id, seg_range)
         return ranges

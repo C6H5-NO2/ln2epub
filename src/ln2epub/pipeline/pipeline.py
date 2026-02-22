@@ -33,4 +33,4 @@ class Pipeline:
             segments_dir=segments_dir,
         )
 
-        return workspace_dir
+        return ''
