@@ -16,8 +16,6 @@ from ..util.path import relative_url
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
 class PrebuildStage:
-    root_directory: str
-
     lang: str
     dc_title: str
     dc_creator: str | None = None
@@ -34,14 +32,17 @@ class PrebuildStage:
     def run(
         self,
         *,
+        root_directory: str,
         segment_result: frozendict[str, str],
         relink_result: frozendict[str, str],
     ) -> ExpandedEpubBuilder:
         package_document_builder = self._get_package_document_builder(
+            root_directory=root_directory,
             segment_result=segment_result,
             relink_result=relink_result,
         )
         navigation_document_builder = self._get_navigation_document_builder(
+            root_directory=root_directory,
             segment_result=segment_result,
         )
         container_resource_builders = self._get_container_resource_builders(
@@ -49,6 +50,7 @@ class PrebuildStage:
             relink_result=relink_result,
         )
         expanded_epub_builder = self._get_expanded_epub_builder(
+            root_directory=root_directory,
             package_document_builder=package_document_builder,
             navigation_document_builder=navigation_document_builder,
             container_resource_builders=container_resource_builders,
@@ -58,6 +60,7 @@ class PrebuildStage:
     def _get_package_document_builder(
         self,
         *,
+        root_directory: str,
         segment_result: frozendict[str, str],
         relink_result: frozendict[str, str],
     ) -> PackageDocumentBuilder:
@@ -65,7 +68,7 @@ class PrebuildStage:
 
         for seg_id, seg_path in segment_result.items():
             dst_url = self._get_seg_url(seg_path)
-            href = self._get_href(dst_url, start=self.package_document_url)
+            href = self._get_href(dst_url, start=self.package_document_url, root=root_directory)
             prib = PublicationResourceItemBuilder(
                 href=href,
                 reading_order=self.segment_order_provider.get_order(seg_id)
@@ -73,7 +76,7 @@ class PrebuildStage:
             pribs.append(prib)
 
         for dst_url, src_path in relink_result.items():
-            href = self._get_href(dst_url, start=self.package_document_url)
+            href = self._get_href(dst_url, start=self.package_document_url, root=root_directory)
             prib = PublicationResourceItemBuilder(
                 href=href,
             )
@@ -84,7 +87,7 @@ class PrebuildStage:
             raise ValueError(self.cover_id)
 
         dst_url = self.navigation_document_url
-        href = self._get_href(dst_url, start=self.package_document_url)
+        href = self._get_href(dst_url, start=self.package_document_url, root=root_directory)
         prib = PublicationResourceItemBuilder(
             href=href,
             id='nav',
@@ -104,6 +107,7 @@ class PrebuildStage:
     def _get_navigation_document_builder(
         self,
         *,
+        root_directory: str,
         segment_result: frozendict[str, str],
     ) -> NavigationDocumentBuilder:
         nibs: list[NavigationItemBuilder] = []
@@ -112,7 +116,7 @@ class PrebuildStage:
         for seg_id in seg_ids:
             title = self.segment_title_provider.get_title(seg_id)
             seg_url = self._get_seg_url(segment_result[seg_id])
-            href = self._get_href(seg_url, start=self.navigation_document_url)
+            href = self._get_href(seg_url, start=self.navigation_document_url, root=root_directory)
             nib = NavigationItemBuilder(
                 text=title,
                 href=href,
@@ -147,13 +151,14 @@ class PrebuildStage:
     def _get_expanded_epub_builder(
         self,
         *,
+        root_directory: str,
         package_document_builder: PackageDocumentBuilder,
         navigation_document_builder: NavigationDocumentBuilder,
         container_resource_builders: list[ContainerResourceBuilder],
     ) -> ExpandedEpubBuilder:
         eeb = ExpandedEpubBuilder(
             container_builder=ContainerBuilder(
-                root_directory=self.root_directory
+                root_directory=root_directory
             ),
             container_file_builder=ContainerFileBuilder(
                 package_document_url=self.package_document_url,
@@ -170,13 +175,8 @@ class PrebuildStage:
     def _get_seg_url(self, seg_path: str) -> str:
         return f'{self.text_url}/{os.path.basename(seg_path)}'
 
-    def _get_href(self, path: str, *, start: str) -> str:
-        href = relative_url(
-            path=path,
-            start=start,
-            root=self.root_directory,
-            mode='url',
-        )
+    def _get_href(self, path: str, *, start: str, root: str) -> str:
+        href = relative_url(path=path, start=start, root=root, mode='url')
         if not href:
             raise PermissionError(path)
         return href

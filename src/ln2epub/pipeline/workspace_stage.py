@@ -10,19 +10,19 @@ class WorkspaceStage:
     def run(
         self,
         *,
-        workspace_dir: str,
+        workspace_directory: str,
     ) -> str:
-        workspace_dir = os.path.abspath(workspace_dir)
-        if not self.force and os.path.isdir(workspace_dir):
-            print(f'reuse workspace `{workspace_dir}`')
-            return workspace_dir
+        workspace_directory = os.path.abspath(workspace_directory)
+        if not self.force and os.path.isdir(workspace_directory):
+            print(f'reuse workspace `{workspace_directory}`')
+            return workspace_directory
         if self.force:
-            if os.path.isdir(workspace_dir):
-                rmtree(workspace_dir, ignore_errors=False)
-            elif os.path.isfile(workspace_dir):
-                os.remove(workspace_dir)
-        if os.path.exists(workspace_dir):
-            raise FileExistsError(workspace_dir)
-        os.makedirs(workspace_dir, exist_ok=False)
-        print(f'built workspace `{workspace_dir}`')
-        return workspace_dir
+            if os.path.isdir(workspace_directory):
+                rmtree(workspace_directory, ignore_errors=False)
+            elif os.path.isfile(workspace_directory):
+                os.remove(workspace_directory)
+        if os.path.exists(workspace_directory):
+            raise FileExistsError(workspace_directory)
+        os.makedirs(workspace_directory, exist_ok=False)
+        print(f'built workspace `{workspace_directory}`')
+        return workspace_directory

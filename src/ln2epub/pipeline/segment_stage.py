@@ -35,7 +35,7 @@ class SegmentStage:
             print(json.dumps(seg_files, ensure_ascii=False, indent=2, sort_keys=True))
             return seg_files
 
-        WorkspaceStage(force=self.force).run(workspace_dir=segments_directory)
+        WorkspaceStage(force=self.force).run(workspace_directory=segments_directory)
         if not os.path.isdir(segments_directory):
             raise NotADirectoryError(segments_directory)
 

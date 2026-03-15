@@ -9,20 +9,23 @@ from dataclasses import dataclass
 class EpubCheck:
     java: str = 'java'
     epubcheck: str = 'epubcheck.jar'
-    root_directory: str
     strict: bool = False
     overwrite: bool = False
 
-    def build(self) -> str:
+    def run(
+        self,
+        *,
+        root_directory: str,
+    ) -> str:
         java = shutil.which(self.java)
         if not java:
             raise FileNotFoundError(self.java)
         epubcheck = os.path.abspath(self.epubcheck)
         if not os.path.isfile(epubcheck):
             raise FileNotFoundError(self.epubcheck)
-        root_directory = os.path.abspath(self.root_directory)
+        root_directory = os.path.abspath(root_directory)
         if not os.path.isdir(root_directory):
-            raise NotADirectoryError(self.root_directory)
+            raise NotADirectoryError(root_directory)
         output_path = f'{root_directory}.epub'
         if not self.overwrite and os.path.exists(output_path):
             raise FileExistsError(output_path)
