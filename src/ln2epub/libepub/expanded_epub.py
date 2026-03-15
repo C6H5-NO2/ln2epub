@@ -26,7 +26,7 @@ class ExpandedEpubBuilder:
     navigation_document_builder: NavigationDocumentBuilder
     support_legacy_ncx: bool = False
 
-    container_resources: frozenlist[ContainerResourceBuilder]
+    container_resource_builders: frozenlist[ContainerResourceBuilder]
 
     def build(self) -> str:
         """
@@ -60,8 +60,8 @@ class ExpandedEpubBuilder:
         if self.support_legacy_ncx:
             self._build_ncx(root=root)
 
-        for container_resource in self.container_resources:
-            container_resource.build(root_directory=root)
+        for container_resource_builder in self.container_resource_builders:
+            container_resource_builder.build(root_directory=root)
 
         return root
 

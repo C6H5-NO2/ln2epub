@@ -20,24 +20,24 @@ class SegmentStage:
         self,
         *,
         normalised_xhtml_path: str,
-        segments_dir: str,
+        segments_directory: str,
     ) -> dict[str, str]:
         seg_files: dict[str, str] = dict()
-        if not self.force and os.path.isdir(segments_dir):
-            listed_files = os.listdir(segments_dir)
+        if not self.force and os.path.isdir(segments_directory):
+            listed_files = os.listdir(segments_directory)
             for listed_file in listed_files:
                 if listed_file.endswith('.xhtml') and is_valid_filename(listed_file):
                     seg_id = listed_file.removesuffix('.xhtml')
                     if is_valid_segment_id(seg_id):
-                        seg_path = os.path.join(segments_dir, listed_file)
+                        seg_path = os.path.join(segments_directory, listed_file)
                         seg_files[seg_id] = seg_path
-            print(f'reuse segments in `{segments_dir}`')
+            print(f'reuse segments in `{segments_directory}`')
             print(json.dumps(seg_files, ensure_ascii=False, indent=2, sort_keys=True))
             return seg_files
 
-        WorkspaceStage(force=self.force).run(workspace_dir=segments_dir)
-        if not os.path.isdir(segments_dir):
-            raise NotADirectoryError(segments_dir)
+        WorkspaceStage(force=self.force).run(workspace_dir=segments_directory)
+        if not os.path.isdir(segments_directory):
+            raise NotADirectoryError(segments_directory)
 
         normed_el = xhtml_parse(normalised_xhtml_path)
         normed_el = normed_el.body[0]
@@ -48,7 +48,7 @@ class SegmentStage:
             seg_file = f'{seg_id}.xhtml'
             if not is_valid_filename(seg_file):
                 raise PermissionError(seg_file)
-            seg_path = os.path.join(segments_dir, seg_file)
+            seg_path = os.path.join(segments_directory, seg_file)
             seg_el = xhtml_document(
                 *seg_el,  # *seg_el to drop <section> tag
                 lang=self.lang,
@@ -57,6 +57,6 @@ class SegmentStage:
             xhtml_dump(seg_el, seg_path, compact=True)
             seg_files[seg_id] = seg_path
 
-        print(f'segmented to `{segments_dir}`')
+        print(f'segmented to `{segments_directory}`')
         print(json.dumps(seg_dict, ensure_ascii=False, indent=2, sort_keys=True))
         return seg_files

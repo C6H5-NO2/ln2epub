@@ -2,11 +2,13 @@ from .segmenter import is_valid_segment_id
 from ..libxml.html import HtmlElement
 from ..libxml.xhtml import xhtml_element_maker
 from ..libxml.xml import ElementMaker
+from ..util.frozendict import frozendict
+from ..util.frozenlist import frozenlist
 
 
 class LinenoSegmenter:
-    def __init__(self, seg_ranges: dict[str, range]):
-        self._seg_ranges: list[tuple[str, range]] = self._validate_seg_ranges(seg_ranges)
+    def __init__(self, seg_ranges: frozendict[str, range]):
+        self._seg_ranges: frozenlist[tuple[str, range]] = self._validate_seg_ranges(seg_ranges)
         self._em: ElementMaker[HtmlElement] = xhtml_element_maker()
 
     def segment(self, div: HtmlElement) -> dict[str, HtmlElement]:
@@ -37,7 +39,7 @@ class LinenoSegmenter:
 
         return seg_dict
 
-    def _validate_seg_ranges(self, ranges: dict[str, range]) -> list[tuple[str, range]]:
+    def _validate_seg_ranges(self, ranges: frozendict[str, range]) -> list[tuple[str, range]]:
         ranges = list(ranges.items())
         ranges.sort(key=lambda it: it[1].start)
         prev = ('(-inf, 1)', range(0, 1))

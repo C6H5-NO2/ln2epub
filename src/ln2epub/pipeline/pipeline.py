@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Final, LiteralString
 
 from .normalise_stage import NormaliseStage
+from .prebuild_stage import PrebuildStage
 from .relink_stage import RelinkStage
 from .segment_stage import SegmentStage
 from .workspace_stage import WorkspaceStage
@@ -19,6 +20,7 @@ class Pipeline:
     normalise_stage: NormaliseStage
     segment_stage: SegmentStage
     relink_stage: RelinkStage
+    prebuild_stage: PrebuildStage
 
     def run(self) -> str:
         workspace_dir = self.workspace_stage.run(
@@ -34,11 +36,16 @@ class Pipeline:
         segments_dir = os.path.join(workspace_dir, _SEGMENTS_DIR)
         segment_result = self.segment_stage.run(
             normalised_xhtml_path=normalised_xhtml_path,
-            segments_dir=segments_dir,
+            segments_directory=segments_dir,
         )
 
         relink_result = self.relink_stage.run(
             segment_paths=list(segment_result.values()),
+        )
+
+        expanded_epub_builder = self.prebuild_stage.run(
+            segment_result=segment_result,
+            relink_result=relink_result,
         )
 
         return ''

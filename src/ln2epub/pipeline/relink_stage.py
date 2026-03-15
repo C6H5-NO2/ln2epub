@@ -14,7 +14,7 @@ class RelinkStage:
         self,
         *,
         segment_paths: frozenlist[str],
-    ):
+    ) -> dict[str, str]:
         relinked: dict[str, str] = dict()
         for seg_path in segment_paths:
             seg_xhtml_el = xhtml_parse(seg_path)
