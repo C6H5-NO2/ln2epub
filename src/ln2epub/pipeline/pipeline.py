@@ -105,6 +105,7 @@ class Pipeline:
             relink_result=relink_result,
         )
         root_directory = expanded_epub_builder.build()
+        print(f'expanded epub in `{root_directory}`')
         epub_path = self.epub_check.run(root_directory=root_directory)
         print(f'saved to `{epub_path}`')
         return epub_path

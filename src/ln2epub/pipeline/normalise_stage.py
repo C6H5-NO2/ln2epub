@@ -26,7 +26,7 @@ class NormaliseStage:
 
         if not os.path.isfile(html_path):
             raise FileNotFoundError(html_path)
-        if html_path.endswith('.html'):
+        if html_path.endswith('.html') or html_path.endswith('.htm'):
             html_el = html_parse(html_path)
         elif html_path.endswith('.xhtml'):
             html_el = xhtml_parse(html_path)

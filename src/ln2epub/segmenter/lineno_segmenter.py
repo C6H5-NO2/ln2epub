@@ -8,6 +8,7 @@ from ..util.frozenlist import frozenlist
 
 class LinenoSegmenter:
     def __init__(self, seg_ranges: frozendict[str, range]):
+        # todo: allow list[range]
         self._seg_ranges: frozenlist[tuple[str, range]] = self._validate_seg_ranges(seg_ranges)
         self._em: ElementMaker[HtmlElement] = xhtml_element_maker()
 

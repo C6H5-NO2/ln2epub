@@ -58,5 +58,5 @@ class SegmentStage:
             seg_files[seg_id] = seg_path
 
         print(f'segmented to `{segments_directory}`')
-        print(json.dumps(seg_dict, ensure_ascii=False, indent=2, sort_keys=True))
+        print(json.dumps(seg_files, ensure_ascii=False, indent=2, sort_keys=True))
         return seg_files
