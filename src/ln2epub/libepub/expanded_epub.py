@@ -12,6 +12,7 @@ from ..libxml.xhtml import xhtml_document, xhtml_dump
 from ..libxml.xml import xml_dump
 from ..util.frozenlist import frozenlist
 from ..util.path import make_ancestors, relative_url, require_contained
+from ..util.sha256sum import hash_directory
 
 
 @dataclass(eq=False, order=False, frozen=True, match_args=False, kw_only=True)
@@ -62,6 +63,11 @@ class ExpandedEpubBuilder:
 
         for container_resource_builder in self.container_resource_builders:
             container_resource_builder.build(root_directory=root)
+
+        sha256sums = hash_directory(root)
+        sha256sum_file = os.path.join(root, 'sha256sum.txt')
+        with open(sha256sum_file, 'wt', encoding='utf-8', newline='\n') as fp:
+            fp.writelines(line + '\n' for line in sha256sums)
 
         return root
 
