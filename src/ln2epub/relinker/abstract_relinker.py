@@ -4,7 +4,7 @@ from typing import final
 from ..libxml.html import HtmlElement
 
 
-class BaseRelinker(ABC):
+class AbstractRelinker(ABC):
     @final
     def relink(self, div: HtmlElement) -> dict[str, str]:
         results: dict[str, str] = dict()

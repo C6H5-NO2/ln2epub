@@ -2,12 +2,12 @@ from mimetypes import guess_file_type
 from os.path import basename
 from urllib.parse import unquote, urlsplit
 
-from .base_relinker import BaseRelinker
+from .abstract_relinker import AbstractRelinker
 from ..libepub.consts import AUDIO, EPUB, FONT, IMAGE, SCRIPT, STYLE, TEXT
 from ..util.path import relative_url
 
 
-class DefaultRelinker(BaseRelinker):
+class DefaultRelinker(AbstractRelinker):
     def _replace_link(self, el, attrib, link, pos):
         link = link.strip('\u0020')
 
