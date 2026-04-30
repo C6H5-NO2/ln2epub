@@ -21,11 +21,15 @@ class DefaultSegmentTitleProvider:
         }
 
     def get_title(self, segment_id: str) -> str:
-        if (chapter_idx := SegmentId.get_chapter_index(segment_id)) is not None:
-            title = self._title_map[SegmentId.CHAPTER_TEMPLATE]
-            title = title.format(chapter_idx)
+        if (chapter_index := SegmentId.get_chapter_index(segment_id)) is not None:
+            title = self._get_chapter_title(chapter_index)
             return title
         title = self._title_map.get(segment_id, None)
         if not title:
             raise ValueError(f'title undefined for `{segment_id}`')
+        return title
+
+    def _get_chapter_title(self, chapter_index: int) -> str:
+        title = self._title_map[SegmentId.CHAPTER_TEMPLATE]
+        title = title.format(chapter_index)
         return title

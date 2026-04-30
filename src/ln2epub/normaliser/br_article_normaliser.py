@@ -4,6 +4,7 @@ from typing import final
 from ..libxml.html import HtmlElement, html_element_maker
 from ..libxml.xhtml import XHTML_NAMESPACE
 from ..libxml.xml import ElementMaker, get_text_tail, set_text_tail, unwrap_sole_child
+from ..util.frozenlist import frozenlist
 
 
 class BrArticleNormaliser:
@@ -125,7 +126,7 @@ class BrArticleNormaliser:
         target_parent: HtmlElement | None,
         *,
         tag: str = None,
-        attribs: list[str] = None,
+        attribs: frozenlist[str] = None,
         text: bool = True,
         tail: bool = True,
         children: bool = True,

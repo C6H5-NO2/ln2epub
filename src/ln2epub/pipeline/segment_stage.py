@@ -26,11 +26,14 @@ class SegmentStage:
         if not self.force and os.path.isdir(segments_directory):
             listed_files = os.listdir(segments_directory)
             for listed_file in listed_files:
-                if listed_file.endswith('.xhtml') and is_valid_filename(listed_file):
-                    seg_id = listed_file.removesuffix('.xhtml')
-                    if is_valid_segment_id(seg_id):
-                        seg_path = os.path.join(segments_directory, listed_file)
-                        seg_files[seg_id] = seg_path
+                if not listed_file.endswith('.xhtml'):
+                    continue
+                if not is_valid_filename(listed_file):
+                    continue
+                seg_id = listed_file.removesuffix('.xhtml')
+                if is_valid_segment_id(seg_id):
+                    seg_path = os.path.join(segments_directory, listed_file)
+                    seg_files[seg_id] = seg_path
             print(f'reuse segments in `{segments_directory}`')
             print(json.dumps(seg_files, ensure_ascii=False, indent=2, sort_keys=True))
             return seg_files
