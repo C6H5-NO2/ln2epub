@@ -103,12 +103,12 @@ class Pipeline:
         *,
         html_path: str,
         workspace_directory: str,
-        run_until: Literal['workspace', 'normalise', 'segment', 'relink', 'prebuild', 'epub'] = 'epub'
+        run_to: Literal['workspace', 'normalise', 'segment', 'relink', 'prebuild', 'epub'] = 'epub'
     ) -> str:
         workspace_directory = self.workspace_stage.run(
             workspace_directory=workspace_directory,
         )
-        if run_until == 'workspace':
+        if run_to == 'workspace':
             return workspace_directory
 
         normalised_xhtml_path = os.path.join(workspace_directory, _NORMALISED_XHTML)
@@ -116,7 +116,7 @@ class Pipeline:
             html_path=html_path,
             normalised_xhtml_path=normalised_xhtml_path,
         )
-        if run_until == 'normalise':
+        if run_to == 'normalise':
             return normalised_xhtml_path
 
         segments_directory = os.path.join(workspace_directory, _SEGMENTS_DIR)
@@ -124,13 +124,13 @@ class Pipeline:
             normalised_xhtml_path=normalised_xhtml_path,
             segments_directory=segments_directory,
         )
-        if run_until == 'segment':
+        if run_to == 'segment':
             return segments_directory
 
         relink_result = self.relink_stage.run(
             segment_paths=list(segment_result.values()),
         )
-        if run_until == 'relink':
+        if run_to == 'relink':
             return segments_directory
 
         root_directory = os.path.join(workspace_directory, _EXPANDED_EPUB_DIR)
@@ -141,7 +141,7 @@ class Pipeline:
         )
         root_directory = expanded_epub_builder.build()
         print(f'expanded epub in `{root_directory}`')
-        if run_until == 'prebuild':
+        if run_to == 'prebuild':
             return root_directory
 
         epub_path = self.epub_check.run(root_directory=root_directory)
